@@ -6,6 +6,7 @@
   <title>VJM - Venta de Jerseys México</title>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://browser.sentry-cdn.com/7.99.0/bundle.min.js" crossorigin="anonymous"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -1676,6 +1677,40 @@ renderCartList();
 <script>
 'use strict';
 
+/* ── SENTRY MONITOREO ─────────────────────────────────────────── */
+if (window.Sentry) {
+  Sentry.init({
+    dsn: 'REEMPLAZA_CON_TU_DSN_DE_SENTRY',
+    tracesSampleRate: 0.2
+  });
+}
+
+/* ── RATE LIMITING LOGIN ──────────────────────────────────────── */
+var RL_KEY     = 'vjm_login_attempts';
+var RL_LOCK    = 'vjm_login_lockout';
+var MAX_TRIES  = 5;
+var LOCK_MS    = 5 * 60 * 1000; /* 5 minutos */
+
+function rlCheck() {
+  var lockUntil = parseInt(localStorage.getItem(RL_LOCK) || '0');
+  if (lockUntil && Date.now() < lockUntil) {
+    var mins = Math.ceil((lockUntil - Date.now()) / 60000);
+    return { bloqueado: true, mins: mins };
+  }
+  if (lockUntil) { localStorage.removeItem(RL_LOCK); localStorage.removeItem(RL_KEY); }
+  return { bloqueado: false };
+}
+
+function rlRecord(exito) {
+  if (exito) { localStorage.removeItem(RL_KEY); localStorage.removeItem(RL_LOCK); return; }
+  var intentos = parseInt(localStorage.getItem(RL_KEY) || '0') + 1;
+  localStorage.setItem(RL_KEY, intentos);
+  if (intentos >= MAX_TRIES) {
+    localStorage.setItem(RL_LOCK, Date.now() + LOCK_MS);
+    localStorage.removeItem(RL_KEY);
+  }
+}
+
 var SB_URL = 'https://cxcyghxnwldqzdghizsd.supabase.co';
 var SB_KEY = 'sb_publishable_JFGxr4fGDNNa8cAiLG0S0w_nPP0cH1X';
 var sb     = window.supabase.createClient(SB_URL, SB_KEY);
@@ -1855,6 +1890,14 @@ document.getElementById('authOverlay').addEventListener('click', function(e) {
 /* LOGIN */
 document.getElementById('loginForm').addEventListener('submit', async function(e) {
   e.preventDefault(); clearAuthMsg();
+
+  /* rate limit */
+  var rl = rlCheck();
+  if (rl.bloqueado) {
+    setAuthMsg('Demasiados intentos. Espera ' + rl.mins + ' minuto(s) e intenta de nuevo.', 'error');
+    return;
+  }
+
   var email = document.getElementById('loginEmail').value.trim();
   var pass  = document.getElementById('loginPass').value;
   var btn   = document.getElementById('loginBtn2');
@@ -1864,13 +1907,16 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
   btn.textContent = 'INICIAR SESIÓN'; btn.disabled = false;
 
   if (res.error) {
-    setAuthMsg(
-      res.error.message.includes('Invalid login credentials')
-        ? 'Email o contraseña incorrectos.'
-        : res.error.message,
-      'error'
-    );
+    rlRecord(false);
+    var intentos = parseInt(localStorage.getItem(RL_KEY) || '0');
+    var restantes = MAX_TRIES - intentos;
+    var msg = res.error.message.includes('Invalid login credentials')
+      ? 'Email o contraseña incorrectos.' + (restantes > 0 ? ' (' + restantes + ' intentos restantes)' : '')
+      : res.error.message;
+    setAuthMsg(msg, 'error');
+    if (window.Sentry) Sentry.captureMessage('Login fallido: ' + email, 'warning');
   } else {
+    rlRecord(true);
     closeAuthModal();
     showToast('✅ ¡Bienvenido de vuelta!');
   }

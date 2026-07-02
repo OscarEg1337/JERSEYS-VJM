@@ -1421,31 +1421,10 @@ document.getElementById('cartBtn').addEventListener('click', openCart);
 document.getElementById('cartClose').addEventListener('click', closeCart);
 document.getElementById('cartOverlay').addEventListener('click', closeCart);
 
-document.getElementById('mpBtn').addEventListener('click', async function() {
+document.getElementById('mpBtn').addEventListener('click', function() {
   if (cart.length === 0) return;
-  var btn = this;
-  btn.textContent = '⏳ Generando cobro...';
-  btn.disabled = true;
-
-  try {
-    var res = await fetch('/api/create-preference', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ items: cart })
-    });
-    var data = await res.json();
-    if (data.init_point) {
-      window.location.href = data.init_point;
-    } else {
-      showToast('Error al conectar con Mercado Pago. Intenta por WhatsApp.');
-      btn.textContent = '💳 PAGAR CON MERCADO PAGO';
-      btn.disabled = false;
-    }
-  } catch(e) {
-    showToast('Error al conectar con Mercado Pago. Intenta por WhatsApp.');
-    btn.textContent = '💳 PAGAR CON MERCADO PAGO';
-    btn.disabled = false;
-  }
+  closeCart();
+  openShippingModal();
 });
 
 /* mostrar toast cuando regresa de MP */
@@ -2237,6 +2216,141 @@ document.getElementById('waCartBtn').addEventListener('click', function() {
   }
 })();
 
+</script>
+<!-- ═══════════════ MODAL DATOS DE ENVÍO ═══════════════ -->
+<div class="auth-overlay" id="shippingOverlay" style="display:none;align-items:center;justify-content:center;">
+  <div class="auth-box" style="max-width:480px;width:95%;max-height:90vh;overflow-y:auto;">
+    <button class="auth-close" id="shippingClose">✕</button>
+    <div class="auth-logo">📦</div>
+    <h2 class="auth-title">Datos de Envío</h2>
+    <p style="color:var(--gray);font-size:.9rem;text-align:center;margin-bottom:1.2rem;">Llena tus datos para completar el pedido</p>
+
+    <form id="shippingForm" autocomplete="on">
+      <div class="auth-field">
+        <label class="auth-label">Nombre completo *</label>
+        <input class="auth-input" id="shipNombre" type="text" placeholder="Juan García López" required>
+      </div>
+      <div class="auth-field">
+        <label class="auth-label">Email *</label>
+        <input class="auth-input" id="shipEmail" type="email" placeholder="correo@ejemplo.com" required>
+      </div>
+      <div class="auth-field">
+        <label class="auth-label">Teléfono *</label>
+        <input class="auth-input" id="shipTel" type="tel" placeholder="81 1234 5678" required>
+      </div>
+      <div class="auth-field">
+        <label class="auth-label">Calle y número *</label>
+        <input class="auth-input" id="shipCalle" type="text" placeholder="Av. Juárez 123 Int. 4" required>
+      </div>
+      <div class="auth-field">
+        <label class="auth-label">Colonia *</label>
+        <input class="auth-input" id="shipColonia" type="text" placeholder="Col. Centro" required>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.8rem;">
+        <div class="auth-field">
+          <label class="auth-label">Ciudad *</label>
+          <input class="auth-input" id="shipCiudad" type="text" placeholder="Monterrey" required>
+        </div>
+        <div class="auth-field">
+          <label class="auth-label">Estado *</label>
+          <input class="auth-input" id="shipEstado" type="text" placeholder="Nuevo León" required>
+        </div>
+      </div>
+      <div class="auth-field">
+        <label class="auth-label">Código Postal *</label>
+        <input class="auth-input" id="shipCP" type="text" placeholder="64000" maxlength="5" required>
+      </div>
+      <div id="shippingMsg" class="auth-msg"></div>
+      <button type="submit" class="auth-submit" id="shippingSubmitBtn">
+        💳 CONTINUAR A PAGAR
+      </button>
+    </form>
+  </div>
+</div>
+
+<script>
+/* ── MODAL ENVÍO ─────────────────────────────────────── */
+function openShippingModal() {
+  var overlay = document.getElementById('shippingOverlay');
+  overlay.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+
+  /* pre-rellenar con datos del perfil si está logueado */
+  if (currentProfile) {
+    document.getElementById('shipNombre').value = currentProfile.nombre || '';
+    document.getElementById('shipTel').value    = currentProfile.telefono || '';
+  }
+  if (currentUser) {
+    document.getElementById('shipEmail').value = currentUser.email || '';
+  }
+}
+
+function closeShippingModal() {
+  document.getElementById('shippingOverlay').style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+document.getElementById('shippingClose').addEventListener('click', closeShippingModal);
+document.getElementById('shippingOverlay').addEventListener('click', function(e) {
+  if (e.target === this) closeShippingModal();
+});
+
+document.getElementById('shippingForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  var btn = document.getElementById('shippingSubmitBtn');
+  var msg = document.getElementById('shippingMsg');
+  btn.textContent = '⏳ Procesando...';
+  btn.disabled = true;
+  msg.textContent = '';
+
+  var envio = {
+    nombre:   document.getElementById('shipNombre').value.trim(),
+    email:    document.getElementById('shipEmail').value.trim(),
+    telefono: document.getElementById('shipTel').value.trim(),
+    calle:    document.getElementById('shipCalle').value.trim(),
+    colonia:  document.getElementById('shipColonia').value.trim(),
+    ciudad:   document.getElementById('shipCiudad').value.trim(),
+    estado:   document.getElementById('shipEstado').value.trim(),
+    cp:       document.getElementById('shipCP').value.trim()
+  };
+
+  /* guardar pedido en Supabase con datos de envío */
+  if (currentUser && cart.length > 0) {
+    var direccion = envio.calle + ', ' + envio.colonia + ', ' + envio.ciudad + ', ' + envio.estado + ' CP ' + envio.cp;
+    await sb.from('pedidos').insert({
+      user_id:          currentUser.id,
+      total:            cartTotal(),
+      estado:           'pendiente',
+      nombre_envio:     envio.nombre,
+      telefono_envio:   envio.telefono,
+      direccion_envio:  direccion,
+      email_envio:      envio.email
+    });
+  }
+
+  /* ir a Mercado Pago */
+  try {
+    var res = await fetch('/api/create-preference', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ items: cart, payer: { email: envio.email, name: envio.nombre, phone: envio.telefono } })
+    });
+    var data = await res.json();
+    if (data.init_point) {
+      window.location.href = data.init_point;
+    } else {
+      msg.textContent = 'Error al conectar con Mercado Pago.';
+      msg.className = 'auth-msg error';
+      btn.textContent = '💳 CONTINUAR A PAGAR';
+      btn.disabled = false;
+    }
+  } catch(err) {
+    msg.textContent = 'Error de conexión. Intenta por WhatsApp.';
+    msg.className = 'auth-msg error';
+    btn.textContent = '💳 CONTINUAR A PAGAR';
+    btn.disabled = false;
+  }
+});
 </script>
 </body>
 </html>

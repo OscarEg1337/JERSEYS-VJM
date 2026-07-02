@@ -1421,9 +1421,42 @@ document.getElementById('cartBtn').addEventListener('click', openCart);
 document.getElementById('cartClose').addEventListener('click', closeCart);
 document.getElementById('cartOverlay').addEventListener('click', closeCart);
 
-document.getElementById('mpBtn').addEventListener('click', function() {
-  showToast('💳  Próximamente disponible. ¡Por ahora contáctanos por WhatsApp!');
+document.getElementById('mpBtn').addEventListener('click', async function() {
+  if (cart.length === 0) return;
+  var btn = this;
+  btn.textContent = '⏳ Generando cobro...';
+  btn.disabled = true;
+
+  try {
+    var res = await fetch('/api/create-preference', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ items: cart })
+    });
+    var data = await res.json();
+    if (data.init_point) {
+      window.location.href = data.init_point;
+    } else {
+      showToast('Error al conectar con Mercado Pago. Intenta por WhatsApp.');
+      btn.textContent = '💳 PAGAR CON MERCADO PAGO';
+      btn.disabled = false;
+    }
+  } catch(e) {
+    showToast('Error al conectar con Mercado Pago. Intenta por WhatsApp.');
+    btn.textContent = '💳 PAGAR CON MERCADO PAGO';
+    btn.disabled = false;
+  }
 });
+
+/* mostrar toast cuando regresa de MP */
+(function() {
+  var params = new URLSearchParams(window.location.search);
+  var pago = params.get('pago');
+  if (pago === 'exito') showToast('✅ ¡Pago completado! Gracias por tu compra.');
+  if (pago === 'error') showToast('❌ El pago no se completó. Intenta de nuevo.');
+  if (pago === 'pendiente') showToast('⏳ Pago pendiente. Te avisamos cuando se confirme.');
+  if (pago) history.replaceState({}, '', '/');
+})();
 
 document.getElementById('waCartBtn').addEventListener('click', function() {
   if (!cart.length) return;

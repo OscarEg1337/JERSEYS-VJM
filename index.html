@@ -2218,8 +2218,8 @@ document.getElementById('waCartBtn').addEventListener('click', function() {
 
 </script>
 <!-- ═══════════════ MODAL DATOS DE ENVÍO ═══════════════ -->
-<div class="auth-overlay" id="shippingOverlay" style="display:none;align-items:center;justify-content:center;">
-  <div class="auth-box" style="max-width:480px;width:95%;max-height:90vh;overflow-y:auto;">
+<div class="auth-overlay" id="shippingOverlay">
+  <div class="auth-modal" style="max-width:480px;">
     <button class="auth-close" id="shippingClose">✕</button>
     <div class="auth-logo">📦</div>
     <h2 class="auth-title">Datos de Envío</h2>
@@ -2272,7 +2272,7 @@ document.getElementById('waCartBtn').addEventListener('click', function() {
 /* ── MODAL ENVÍO ─────────────────────────────────────── */
 function openShippingModal() {
   var overlay = document.getElementById('shippingOverlay');
-  overlay.style.display = 'flex';
+  overlay.classList.add('open');
   document.body.style.overflow = 'hidden';
 
   /* pre-rellenar con datos del perfil si está logueado */
@@ -2286,7 +2286,7 @@ function openShippingModal() {
 }
 
 function closeShippingModal() {
-  document.getElementById('shippingOverlay').style.display = 'none';
+  document.getElementById('shippingOverlay').classList.remove('open');
   document.body.style.overflow = '';
 }
 

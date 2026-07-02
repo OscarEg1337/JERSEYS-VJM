@@ -1443,13 +1443,11 @@ document.getElementById('mpBtn').addEventListener('click', function() {
       try { pending = JSON.parse(pendingStr); } catch(e) { return; }
       localStorage.removeItem('vjm_pending');
       if (!pending.pedidoId || !pending.items || !pending.items.length) return;
-      /* insertar items → dispara trigger que marca jerseys como vendidos */
-      await sb.from('pedido_items').insert(
-        pending.items.map(function(i) {
-          return { pedido_id: pending.pedidoId, producto_id: i.producto_id,
-                   nombre_producto: i.nombre_producto, precio: i.precio, talla: i.talla };
-        })
-      );
+      /* decrementar cantidad de cada jersey comprado */
+      for (var i = 0; i < pending.items.length; i++) {
+        var item = pending.items[i];
+        await sb.rpc('decrementar_cantidad', { jersey_id: item.producto_id });
+      }
       /* marcar pedido como pagado */
       await sb.from('pedidos').update({ estado: 'pagado' }).eq('id', pending.pedidoId);
       /* enviar emails de notificación */
@@ -1583,7 +1581,7 @@ function renderProducts(list) {
   }
 
   grid.innerHTML = list.map(function(p) {
-    var vendido = p.disponible === false;
+    var vendido = p.disponible === false || p.cantidad <= 0;
 
     var imgHtml = p.imagen
       ? '<img src="' + p.imagen + '" alt="' + p.nombre + '" loading="lazy" ' +
@@ -1793,7 +1791,8 @@ async function loadJerseysFromSB() {
       imagen:        j.imagen        || null,
       imagenEspalda: j.imagen_espalda || null,
       descripcion:   j.descripcion   || '',
-      disponible:    j.disponible !== false
+      disponible:    j.disponible !== false,
+      cantidad:      j.cantidad !== undefined ? j.cantidad : 1
     };
   });
 
@@ -1991,9 +1990,7 @@ document.getElementById('registerForm').addEventListener('submit', async functio
 
   if (res.error) { setAuthMsg(res.error.message, 'error'); return; }
 
-  if (res.data && res.data.user) {
-    await sb.from('profiles').upsert({ id: res.data.user.id, nombre: nombre, telefono: tel });
-  }
+  /* el trigger en Supabase crea el perfil automáticamente */
   closeAuthModal();
   showToast('✅ ¡Cuenta creada! Revisa tu email para confirmar.');
 });

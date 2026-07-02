@@ -1432,7 +1432,10 @@ document.getElementById('mpBtn').addEventListener('click', function() {
 (function() {
   var params = new URLSearchParams(window.location.search);
   var pago = params.get('pago');
-  if (pago === 'exito') showToast('✅ ¡Pago completado! Gracias por tu compra.');
+  if (pago === 'exito') {
+    showToast('✅ ¡Pago completado! Gracias por tu compra.');
+    localStorage.setItem('vjm_procesar_pago', '1');
+  }
   if (pago === 'error') showToast('❌ El pago no se completó. Intenta de nuevo.');
   if (pago === 'pendiente') showToast('⏳ Pago pendiente. Te avisamos cuando se confirme.');
   if (pago) history.replaceState({}, '', '/');
@@ -1857,9 +1860,33 @@ async function loadProfile() {
 }
 
 /* ── ESTADO AUTH ──────────────────────────────────────────────── */
-sb.auth.onAuthStateChange(function(event, session) {
+sb.auth.onAuthStateChange(async function(event, session) {
   currentUser = session ? session.user : null;
-  if (currentUser) { loadProfile(); syncCartOnLogin(); }
+  if (currentUser) {
+    loadProfile(); syncCartOnLogin();
+    /* procesar pedido pendiente después de pago con MP */
+    if (localStorage.getItem('vjm_procesar_pago')) {
+      localStorage.removeItem('vjm_procesar_pago');
+      var pendingStr = localStorage.getItem('vjm_pending');
+      if (pendingStr) {
+        var pending = JSON.parse(pendingStr);
+        localStorage.removeItem('vjm_pending');
+        if (pending.pedidoId && pending.items && pending.items.length > 0) {
+          /* insertar items → dispara trigger que marca jerseys como vendidos */
+          await sb.from('pedido_items').insert(
+            pending.items.map(function(i) {
+              return { pedido_id: pending.pedidoId, producto_id: i.producto_id,
+                       nombre_producto: i.nombre_producto, precio: i.precio, talla: i.talla };
+            })
+          );
+          /* actualizar estado del pedido a pagado */
+          await sb.from('pedidos').update({ estado: 'pagado' }).eq('id', pending.pedidoId);
+          /* recargar jerseys para reflejar los vendidos */
+          loadJerseysFromSB();
+        }
+      }
+    }
+  }
   else { currentProfile = null; }
   updateHeaderAuth();
 });
@@ -2385,10 +2412,11 @@ document.getElementById('shippingForm').addEventListener('submit', async functio
   var costoEnvio = ENVIO_PRECIOS[tipoEnvio];
   var totalFinal = cartTotal() + costoEnvio;
 
-  /* guardar pedido en Supabase con datos de envío */
+  /* guardar pedido en Supabase con datos de envío y obtener ID */
+  var pedidoId = null;
   if (currentUser && cart.length > 0) {
     var direccion = envio.calle + ', ' + envio.colonia + ', ' + envio.ciudad + ', ' + envio.estado + ' CP ' + envio.cp;
-    await sb.from('pedidos').insert({
+    var pedidoRes = await sb.from('pedidos').insert({
       user_id:          currentUser.id,
       total:            totalFinal,
       estado:           'pendiente',
@@ -2398,8 +2426,17 @@ document.getElementById('shippingForm').addEventListener('submit', async functio
       email_envio:      envio.email,
       tipo_envio:       tipoEnvio,
       costo_envio:      costoEnvio
-    });
+    }).select('id').maybeSingle();
+    pedidoId = pedidoRes.data ? pedidoRes.data.id : null;
   }
+
+  /* guardar en localStorage para procesar después del pago */
+  localStorage.setItem('vjm_pending', JSON.stringify({
+    pedidoId: pedidoId,
+    items: cart.map(function(i) {
+      return { producto_id: i.id, nombre_producto: i.nombre, precio: i.precio, talla: i.talla || '' };
+    })
+  }));
 
   /* items para MP: jerseys + envío como línea extra */
   var itemsMP = cart.concat([{
@@ -2412,7 +2449,7 @@ document.getElementById('shippingForm').addEventListener('submit', async functio
     var res = await fetch('/api/create-preference', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ items: itemsMP, payer: { email: envio.email, name: envio.nombre, phone: envio.telefono } })
+      body: JSON.stringify({ items: itemsMP, payer: { email: envio.email, name: envio.nombre, phone: envio.telefono }, external_reference: pedidoId })
     });
     var data = await res.json();
     if (data.init_point) {

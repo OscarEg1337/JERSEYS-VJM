@@ -2260,6 +2260,41 @@ document.getElementById('waCartBtn').addEventListener('click', function() {
         <label class="auth-label">Código Postal *</label>
         <input class="auth-input" id="shipCP" type="text" placeholder="64000" maxlength="5" required>
       </div>
+      <!-- Tipo de envío -->
+      <div class="auth-field">
+        <label class="auth-label">Tipo de envío *</label>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin-top:.4rem;">
+          <label id="labelCorreos" style="border:2px solid #333;border-radius:10px;padding:.9rem;cursor:pointer;transition:border-color .2s;">
+            <input type="radio" name="tipoEnvio" value="correos" style="display:none;" required>
+            <div style="font-weight:700;color:var(--white);font-size:.95rem;">📮 Correos MX</div>
+            <div style="color:var(--green);font-weight:700;margin-top:.3rem;">$70 MXN</div>
+            <div style="color:var(--gray);font-size:.78rem;">5-10 días hábiles</div>
+          </label>
+          <label id="labelDHL" style="border:2px solid #333;border-radius:10px;padding:.9rem;cursor:pointer;transition:border-color .2s;">
+            <input type="radio" name="tipoEnvio" value="dhl" style="display:none;">
+            <div style="font-weight:700;color:var(--white);font-size:.95rem;">🚚 DHL Express</div>
+            <div style="color:var(--green);font-weight:700;margin-top:.3rem;">$250 MXN</div>
+            <div style="color:var(--gray);font-size:.78rem;">1-3 días hábiles</div>
+          </label>
+        </div>
+      </div>
+
+      <!-- Resumen de costo -->
+      <div style="background:#111;border:1px solid #222;border-radius:10px;padding:1rem;margin-top:.5rem;">
+        <div style="display:flex;justify-content:space-between;color:var(--gray);font-size:.9rem;margin-bottom:.4rem;">
+          <span>Jerseys</span>
+          <span id="shipSubtotal">$0 MXN</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;color:var(--gray);font-size:.9rem;margin-bottom:.6rem;">
+          <span>Envío</span>
+          <span id="shipEnvioCosto">— MXN</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-weight:700;color:var(--white);font-size:1.05rem;border-top:1px solid #333;padding-top:.6rem;">
+          <span>Total</span>
+          <span id="shipTotal" style="color:var(--green);">$0 MXN</span>
+        </div>
+      </div>
+
       <div id="shippingMsg" class="auth-msg"></div>
       <button type="submit" class="auth-submit" id="shippingSubmitBtn">
         💳 CONTINUAR A PAGAR
@@ -2275,6 +2310,16 @@ function openShippingModal() {
   overlay.classList.add('open');
   document.body.style.overflow = 'hidden';
 
+  /* actualizar resumen de costos */
+  document.getElementById('shipSubtotal').textContent = '$' + cartTotal() + ' MXN';
+  document.getElementById('shipTotal').textContent    = '$' + cartTotal() + ' MXN';
+  document.getElementById('shipEnvioCosto').textContent = '— Elige opción';
+
+  /* reset selección de envío */
+  document.querySelectorAll('input[name="tipoEnvio"]').forEach(function(r) { r.checked = false; });
+  document.getElementById('labelCorreos').style.borderColor = '#333';
+  document.getElementById('labelDHL').style.borderColor = '#333';
+
   /* pre-rellenar con datos del perfil si está logueado */
   if (currentProfile) {
     document.getElementById('shipNombre').value = currentProfile.nombre || '';
@@ -2289,6 +2334,19 @@ function closeShippingModal() {
   document.getElementById('shippingOverlay').classList.remove('open');
   document.body.style.overflow = '';
 }
+
+/* actualizar total al elegir envío */
+var ENVIO_PRECIOS = { correos: 70, dhl: 250 };
+document.querySelectorAll('input[name="tipoEnvio"]').forEach(function(radio) {
+  radio.addEventListener('change', function() {
+    var costo = ENVIO_PRECIOS[this.value];
+    var total = cartTotal() + costo;
+    document.getElementById('shipEnvioCosto').textContent = '$' + costo + ' MXN';
+    document.getElementById('shipTotal').textContent = '$' + total + ' MXN';
+    document.getElementById('labelCorreos').style.borderColor = this.value === 'correos' ? 'var(--green)' : '#333';
+    document.getElementById('labelDHL').style.borderColor     = this.value === 'dhl'     ? 'var(--green)' : '#333';
+  });
+});
 
 document.getElementById('shippingClose').addEventListener('click', closeShippingModal);
 document.getElementById('shippingOverlay').addEventListener('click', function(e) {
@@ -2314,26 +2372,46 @@ document.getElementById('shippingForm').addEventListener('submit', async functio
     cp:       document.getElementById('shipCP').value.trim()
   };
 
+  var tipoEnvioEl = document.querySelector('input[name="tipoEnvio"]:checked');
+  if (!tipoEnvioEl) {
+    msg.textContent = 'Selecciona un tipo de envío.';
+    msg.className = 'auth-msg error';
+    btn.textContent = '💳 CONTINUAR A PAGAR';
+    btn.disabled = false;
+    return;
+  }
+  var tipoEnvio  = tipoEnvioEl.value;
+  var costoEnvio = ENVIO_PRECIOS[tipoEnvio];
+  var totalFinal = cartTotal() + costoEnvio;
+
   /* guardar pedido en Supabase con datos de envío */
   if (currentUser && cart.length > 0) {
     var direccion = envio.calle + ', ' + envio.colonia + ', ' + envio.ciudad + ', ' + envio.estado + ' CP ' + envio.cp;
     await sb.from('pedidos').insert({
       user_id:          currentUser.id,
-      total:            cartTotal(),
+      total:            totalFinal,
       estado:           'pendiente',
       nombre_envio:     envio.nombre,
       telefono_envio:   envio.telefono,
       direccion_envio:  direccion,
-      email_envio:      envio.email
+      email_envio:      envio.email,
+      tipo_envio:       tipoEnvio,
+      costo_envio:      costoEnvio
     });
   }
+
+  /* items para MP: jerseys + envío como línea extra */
+  var itemsMP = cart.concat([{
+    nombre: tipoEnvio === 'dhl' ? 'Envío DHL Express' : 'Envío Correos de México',
+    precio: costoEnvio
+  }]);
 
   /* ir a Mercado Pago */
   try {
     var res = await fetch('/api/create-preference', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ items: cart, payer: { email: envio.email, name: envio.nombre, phone: envio.telefono } })
+      body: JSON.stringify({ items: itemsMP, payer: { email: envio.email, name: envio.nombre, phone: envio.telefono } })
     });
     var data = await res.json();
     if (data.init_point) {

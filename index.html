@@ -1434,7 +1434,37 @@ document.getElementById('mpBtn').addEventListener('click', function() {
   var pago = params.get('pago');
   if (pago === 'exito') {
     showToast('✅ ¡Pago completado! Gracias por tu compra.');
-    localStorage.setItem('vjm_procesar_pago', '1');
+    sb.auth.getSession().then(async function(result) {
+      var session = result.data && result.data.session;
+      if (!session) return;
+      var pendingStr = localStorage.getItem('vjm_pending');
+      if (!pendingStr) return;
+      var pending;
+      try { pending = JSON.parse(pendingStr); } catch(e) { return; }
+      localStorage.removeItem('vjm_pending');
+      if (!pending.pedidoId || !pending.items || !pending.items.length) return;
+      /* insertar items → dispara trigger que marca jerseys como vendidos */
+      await sb.from('pedido_items').insert(
+        pending.items.map(function(i) {
+          return { pedido_id: pending.pedidoId, producto_id: i.producto_id,
+                   nombre_producto: i.nombre_producto, precio: i.precio, talla: i.talla };
+        })
+      );
+      /* marcar pedido como pagado */
+      await sb.from('pedidos').update({ estado: 'pagado' }).eq('id', pending.pedidoId);
+      /* enviar emails de notificación */
+      if (pending.pedidoRecord) {
+        fetch('/api/notificar-venta', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ type: 'UPDATE', record: pending.pedidoRecord, old_record: { estado: 'pendiente' } })
+        }).catch(function(){});
+      }
+      /* recargar catálogo */
+      setTimeout(function() {
+        if (typeof loadJerseysFromSB === 'function') loadJerseysFromSB();
+      }, 600);
+    });
   }
   if (pago === 'error') showToast('❌ El pago no se completó. Intenta de nuevo.');
   if (pago === 'pendiente') showToast('⏳ Pago pendiente. Te avisamos cuando se confirme.');
@@ -1860,41 +1890,9 @@ async function loadProfile() {
 }
 
 /* ── ESTADO AUTH ──────────────────────────────────────────────── */
-sb.auth.onAuthStateChange(async function(event, session) {
+sb.auth.onAuthStateChange(function(event, session) {
   currentUser = session ? session.user : null;
-  if (currentUser) {
-    loadProfile(); syncCartOnLogin();
-    /* procesar pedido pendiente después de pago con MP */
-    if (localStorage.getItem('vjm_procesar_pago')) {
-      localStorage.removeItem('vjm_procesar_pago');
-      var pendingStr = localStorage.getItem('vjm_pending');
-      if (pendingStr) {
-        var pending = JSON.parse(pendingStr);
-        localStorage.removeItem('vjm_pending');
-        if (pending.pedidoId && pending.items && pending.items.length > 0) {
-          /* insertar items → dispara trigger que marca jerseys como vendidos */
-          await sb.from('pedido_items').insert(
-            pending.items.map(function(i) {
-              return { pedido_id: pending.pedidoId, producto_id: i.producto_id,
-                       nombre_producto: i.nombre_producto, precio: i.precio, talla: i.talla };
-            })
-          );
-          /* actualizar estado del pedido a pagado */
-          await sb.from('pedidos').update({ estado: 'pagado' }).eq('id', pending.pedidoId);
-          /* enviar notificacion por email a Oscar */
-          if (pending.pedidoRecord) {
-            fetch('/api/notificar-venta', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ type: 'UPDATE', record: pending.pedidoRecord, old_record: { estado: 'pendiente' } })
-            }).catch(function(){});
-          }
-          /* recargar jerseys para reflejar los vendidos */
-          loadJerseysFromSB();
-        }
-      }
-    }
-  }
+  if (currentUser) { loadProfile(); syncCartOnLogin(); }
   else { currentProfile = null; }
   updateHeaderAuth();
 });

@@ -2425,7 +2425,8 @@ document.getElementById('shippingForm').addEventListener('submit', async functio
       direccion_envio:  direccion,
       email_envio:      envio.email,
       tipo_envio:       tipoEnvio,
-      costo_envio:      costoEnvio
+      costo_envio:      costoEnvio,
+      items_resumen:    cart.map(function(i){ return i.nombre + ' (' + (i.talla||'') + ')'; }).join(', ')
     }).select('id').maybeSingle();
     pedidoId = pedidoRes.data ? pedidoRes.data.id : null;
   }

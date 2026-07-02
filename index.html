@@ -1881,6 +1881,14 @@ sb.auth.onAuthStateChange(async function(event, session) {
           );
           /* actualizar estado del pedido a pagado */
           await sb.from('pedidos').update({ estado: 'pagado' }).eq('id', pending.pedidoId);
+          /* enviar notificacion por email a Oscar */
+          if (pending.pedidoRecord) {
+            fetch('/api/notificar-venta', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ type: 'UPDATE', record: pending.pedidoRecord, old_record: { estado: 'pendiente' } })
+            }).catch(function(){});
+          }
           /* recargar jerseys para reflejar los vendidos */
           loadJerseysFromSB();
         }
@@ -2436,7 +2444,19 @@ document.getElementById('shippingForm').addEventListener('submit', async functio
     pedidoId: pedidoId,
     items: cart.map(function(i) {
       return { producto_id: i.id, nombre_producto: i.nombre, precio: i.precio, talla: i.talla || '' };
-    })
+    }),
+    pedidoRecord: {
+      id:              pedidoId,
+      nombre_envio:    envio.nombre,
+      telefono_envio:  envio.telefono,
+      email_envio:     envio.email,
+      direccion_envio: envio.calle + ', ' + envio.colonia + ', ' + envio.ciudad + ', ' + envio.estado + ' CP ' + envio.cp,
+      tipo_envio:      tipoEnvio,
+      costo_envio:     costoEnvio,
+      total:           totalFinal,
+      items_resumen:   cart.map(function(i){ return i.nombre + ' (' + (i.talla||'') + ')'; }).join(', '),
+      estado:          'pagado'
+    }
   }));
 
   /* items para MP: jerseys + envío como línea extra */

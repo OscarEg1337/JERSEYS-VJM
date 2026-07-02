@@ -2414,9 +2414,21 @@ document.getElementById('shippingForm').addEventListener('submit', async functio
   e.preventDefault();
   var btn = document.getElementById('shippingSubmitBtn');
   var msg = document.getElementById('shippingMsg');
+  msg.textContent = '';
+
+  /* evitar pedido duplicado si ya hay uno pendiente */
+  var yaEnProceso = localStorage.getItem('vjm_pending');
+  if (yaEnProceso) {
+    try {
+      var p = JSON.parse(yaEnProceso);
+      if (p.pedidoId) {
+        localStorage.removeItem('vjm_pending');
+      }
+    } catch(e) {}
+  }
+
   btn.textContent = '⏳ Procesando...';
   btn.disabled = true;
-  msg.textContent = '';
 
   var envio = {
     nombre:   document.getElementById('shipNombre').value.trim(),

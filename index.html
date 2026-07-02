@@ -371,6 +371,7 @@
       border-radius: 12px; overflow: hidden;
       transition: transform .3s, box-shadow .3s;
       opacity: 0; transform: translateY(20px);
+      display: flex; flex-direction: column;
     }
     .product-card.visible {
       opacity: 1; transform: translateY(0);
@@ -411,7 +412,7 @@
       display: flex; align-items: center; gap: 4px;
     }
 
-    .card-body { padding: 1.2rem; }
+    .card-body { padding: 1.2rem; display: flex; flex-direction: column; flex: 1; }
 
     .badge-liga {
       display: inline-block;
@@ -447,7 +448,7 @@
     }
     .card-price small { font-size: .85rem; color: var(--gray); font-weight: 400; }
 
-    .card-actions { display: flex; flex-direction: column; gap: .5rem; }
+    .card-actions { display: flex; flex-direction: column; gap: .5rem; margin-top: auto; padding-top: .8rem; }
 
     .btn-details, .btn-add-card {
       width: 100%; padding: 10px;

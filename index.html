@@ -1300,6 +1300,31 @@
 /* ── DATA ─────────────────────────────────────────────────────── */
 var WA_NUM = '528116544571';
 
+/* dominios de correos temporales/falsos bloqueados */
+var DOMINIOS_BLOQUEADOS = [
+  'mailinator.com','guerrillamail.com','guerrillamail.info','guerrillamail.biz',
+  'guerrillamail.de','guerrillamail.net','guerrillamail.org','guerrillamailblock.com',
+  'grr.la','sharklasers.com','spam4.me','yopmail.com','yopmail.fr',
+  'tempmail.com','tempr.email','temp-mail.org','tempinbox.com','tempemail.com',
+  'throwaway.email','throwam.com','trashmail.com','trashmail.at','trashmail.me',
+  'trashmail.net','trashmail.io','trashmail.org','trash-mail.de',
+  'mailnesia.com','maildrop.cc','mailnull.com','fakeinbox.com',
+  'dispostable.com','discard.email','spam.la','spamgourmet.com',
+  'getairmail.com','getnada.com','mohmal.com','10minutemail.com',
+  'emailondeck.com','mintemail.com','jetable.org','boximail.com',
+  'crazymailing.com','safetymail.info','spamfree24.org','trashdevil.com',
+  'mailtemp.net','temporarymail.org','noclickemail.com','amilegit.com'
+];
+
+function isEmailValido(email) {
+  if (!email) return false;
+  var re = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+  if (!re.test(email)) return false;
+  var dominio = email.split('@')[1].toLowerCase();
+  if (DOMINIOS_BLOQUEADOS.indexOf(dominio) !== -1) return false;
+  return true;
+}
+
 var PRODUCTS = [
   {
     id: 1,
@@ -1977,9 +2002,10 @@ document.getElementById('registerForm').addEventListener('submit', async functio
   var pass2  = document.getElementById('regPass2').value;
   var btn    = document.getElementById('registerBtn');
 
-  if (!nombre)         { setAuthMsg('Ingresa tu nombre completo.', 'error'); return; }
-  if (pass !== pass2)  { setAuthMsg('Las contraseñas no coinciden.', 'error'); return; }
-  if (pass.length < 6) { setAuthMsg('Mínimo 6 caracteres.', 'error'); return; }
+  if (!nombre)              { setAuthMsg('Ingresa tu nombre completo.', 'error'); return; }
+  if (!isEmailValido(email)){ setAuthMsg('Ingresa un correo electrónico válido.', 'error'); return; }
+  if (pass !== pass2)       { setAuthMsg('Las contraseñas no coinciden.', 'error'); return; }
+  if (pass.length < 6)      { setAuthMsg('Mínimo 6 caracteres.', 'error'); return; }
 
   btn.textContent = 'CREANDO…'; btn.disabled = true;
   var res = await sb.auth.signUp({

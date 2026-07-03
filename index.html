@@ -1460,79 +1460,82 @@ document.getElementById('mpBtn').addEventListener('click', function() {
   if (pago === 'exito') {
     showToast('✅ ¡Pago completado! Gracias por tu compra.');
     
-    var pendingStr = localStorage.getItem('vjm_pending');
-    if (!pendingStr) return;
-    var pending;
-    try { pending = JSON.parse(pendingStr); } catch(e) { return; }
-    localStorage.removeItem('vjm_pending');
-    
-    if (!pending.pedidoId || !pending.items || !pending.items.length) return;
-    
-    /* decrementar cantidad de cada jersey comprado */
-    for (var i = 0; i < pending.items.length; i++) {
-      var item = pending.items[i];
-      /* Obtener cantidad actual */
-      var { data: jersey, error: getError } = await sb.from('jerseys').select('cantidad, disponible').eq('id', item.producto_id).single();
-      if (getError) {
-        console.error('Error al obtener jersey:', getError);
-        continue;
-      }
-      if (jersey) {
-        var nuevaCantidad = jersey.cantidad - 1;
-        var { error: updateError } = await sb.from('jerseys').update({
-          cantidad: nuevaCantidad,
-          disponible: nuevaCantidad > 0
-        }).eq('id', item.producto_id);
-        if (updateError) {
-          console.error('Error al actualizar stock:', updateError);
-        } else {
-          console.log('Stock actualizado para jersey:', item.producto_id, 'Nueva cantidad:', nuevaCantidad);
+    /* Envolver en función async autoejecutable para poder usar await */
+    (async function() {
+      var pendingStr = localStorage.getItem('vjm_pending');
+      if (!pendingStr) return;
+      var pending;
+      try { pending = JSON.parse(pendingStr); } catch(e) { return; }
+      localStorage.removeItem('vjm_pending');
+      
+      if (!pending.pedidoId || !pending.items || !pending.items.length) return;
+      
+      /* decrementar cantidad de cada jersey comprado */
+      for (var i = 0; i < pending.items.length; i++) {
+        var item = pending.items[i];
+        /* Obtener cantidad actual */
+        var { data: jersey, error: getError } = await sb.from('jerseys').select('cantidad, disponible').eq('id', item.producto_id).single();
+        if (getError) {
+          console.error('Error al obtener jersey:', getError);
+          continue;
+        }
+        if (jersey) {
+          var nuevaCantidad = jersey.cantidad - 1;
+          var { error: updateError } = await sb.from('jerseys').update({
+            cantidad: nuevaCantidad,
+            disponible: nuevaCantidad > 0
+          }).eq('id', item.producto_id);
+          if (updateError) {
+            console.error('Error al actualizar stock:', updateError);
+          } else {
+            console.log('Stock actualizado para jersey:', item.producto_id, 'Nueva cantidad:', nuevaCantidad);
+          }
         }
       }
-    }
-    
-    /* marcar pedido como pagado */
-    await sb.from('pedidos').update({ estado: 'pagado' }).eq('id', pending.pedidoId);
-    
-    /* enviar emails de notificación */
-    try {
-      /* Obtener datos actualizados del pedido desde Supabase */
-      var { data: pedidoActualizado, error: pedidoError } = await sb.from('pedidos').select('*').eq('id', pending.pedidoId).single();
       
-      if (pedidoError) {
-        console.error('Error al obtener pedido para notificación:', pedidoError);
-      }
+      /* marcar pedido como pagado */
+      await sb.from('pedidos').update({ estado: 'pagado' }).eq('id', pending.pedidoId);
       
-      if (pedidoActualizado) {
-        var notifResponse = await fetch('/api/notificar-venta', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ 
-            type: 'UPDATE', 
-            record: pedidoActualizado, 
-            old_record: { estado: 'pendiente' } 
-          })
-        });
+      /* enviar emails de notificación */
+      try {
+        /* Obtener datos actualizados del pedido desde Supabase */
+        var { data: pedidoActualizado, error: pedidoError } = await sb.from('pedidos').select('*').eq('id', pending.pedidoId).single();
         
-        if (!notifResponse.ok) {
-          console.error('Error al enviar notificaciones:', await notifResponse.text());
-        } else {
-          console.log('Notificaciones enviadas correctamente');
+        if (pedidoError) {
+          console.error('Error al obtener pedido para notificación:', pedidoError);
         }
+        
+        if (pedidoActualizado) {
+          var notifResponse = await fetch('/api/notificar-venta', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+              type: 'UPDATE', 
+              record: pedidoActualizado, 
+              old_record: { estado: 'pendiente' } 
+            })
+          });
+          
+          if (!notifResponse.ok) {
+            console.error('Error al enviar notificaciones:', await notifResponse.text());
+          } else {
+            console.log('Notificaciones enviadas correctamente');
+          }
+        }
+      } catch(notifError) {
+        console.error('Error en notificaciones:', notifError);
       }
-    } catch(notifError) {
-      console.error('Error en notificaciones:', notifError);
-    }
-    
-    /* recargar catálogo */
-    setTimeout(function() {
-      if (typeof loadJerseysFromSB === 'function') loadJerseysFromSB();
-    }, 600);
-    
-    /* limpiar carrito */
-    cart = [];
-    saveCart();
-    updateCartCount();
+      
+      /* recargar catálogo */
+      setTimeout(function() {
+        if (typeof loadJerseysFromSB === 'function') loadJerseysFromSB();
+      }, 600);
+      
+      /* limpiar carrito */
+      cart = [];
+      saveCart();
+      updateCartCount();
+    })();
   }
   if (pago === 'error') showToast('❌ El pago no se completó. Intenta de nuevo.');
   if (pago === 'pendiente') showToast('⏳ Pago pendiente. Te avisamos cuando se confirme.');

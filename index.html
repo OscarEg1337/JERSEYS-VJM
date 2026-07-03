@@ -1471,17 +1471,55 @@ document.getElementById('mpBtn').addEventListener('click', function() {
       /* decrementar cantidad de cada jersey comprado */
       for (var i = 0; i < pending.items.length; i++) {
         var item = pending.items[i];
-        await sb.rpc('decrementar_cantidad', { jersey_id: item.producto_id });
+        /* Obtener cantidad actual */
+        var { data: jersey, error: getError } = await sb.from('jerseys').select('cantidad, disponible').eq('id', item.producto_id).single();
+        if (getError) {
+          console.error('Error al obtener jersey:', getError);
+          continue;
+        }
+        if (jersey) {
+          var nuevaCantidad = jersey.cantidad - 1;
+          var { error: updateError } = await sb.from('jerseys').update({
+            cantidad: nuevaCantidad,
+            disponible: nuevaCantidad > 0
+          }).eq('id', item.producto_id);
+          if (updateError) {
+            console.error('Error al actualizar stock:', updateError);
+          } else {
+            console.log('Stock actualizado para jersey:', item.producto_id, 'Nueva cantidad:', nuevaCantidad);
+          }
+        }
       }
       /* marcar pedido como pagado */
       await sb.from('pedidos').update({ estado: 'pagado' }).eq('id', pending.pedidoId);
       /* enviar emails de notificación */
-      if (pending.pedidoRecord) {
-        fetch('/api/notificar-venta', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ type: 'UPDATE', record: pending.pedidoRecord, old_record: { estado: 'pendiente' } })
-        }).catch(function(){});
+      try {
+        /* Obtener datos actualizados del pedido desde Supabase */
+        var { data: pedidoActualizado, error: pedidoError } = await sb.from('pedidos').select('*').eq('id', pending.pedidoId).single();
+        
+        if (pedidoError) {
+          console.error('Error al obtener pedido para notificación:', pedidoError);
+        }
+        
+        if (pedidoActualizado) {
+          var notifResponse = await fetch('/api/notificar-venta', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+              type: 'UPDATE', 
+              record: pedidoActualizado, 
+              old_record: { estado: 'pendiente' } 
+            })
+          });
+          
+          if (!notifResponse.ok) {
+            console.error('Error al enviar notificaciones:', await notifResponse.text());
+          } else {
+            console.log('Notificaciones enviadas correctamente');
+          }
+        }
+      } catch(notifError) {
+        console.error('Error en notificaciones:', notifError);
       }
       /* recargar catálogo */
       setTimeout(function() {

@@ -24,6 +24,7 @@ module.exports = async function handler(req, res) {
       pending: 'https://jerseys-vjm.vercel.app/?pago=pendiente'
     },
     auto_return: 'approved',
+    notification_url: 'https://jerseys-vjm.vercel.app/api/mp-webhook',
     external_reference: external_reference ? String(external_reference) : undefined,
     payer: payer && payer.email ? { email: payer.email } : undefined
   };

@@ -45,7 +45,7 @@ module.exports = async function handler(req, res) {
 
     if (!mpRes.ok) return res.status(500).json({ error: data.message || 'MP error' });
 
-    res.json({ init_point: data.init_point });
+    res.json({ init_point: data.sandbox_init_point || data.init_point });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

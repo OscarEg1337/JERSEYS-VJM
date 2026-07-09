@@ -9,6 +9,30 @@ function sbHeaders() {
   };
 }
 
+/* Busca el pago aprobado y su external_reference, sin importar si MP avisó
+   por topic=payment (webhooks v2) o topic=merchant_order (IPN clasico, el
+   que realmente manda la API de checkout/preferences que usamos). */
+async function resolvePagoAprobado(type, id) {
+  var mpHeaders = { 'Authorization': 'Bearer ' + process.env.MP_ACCESS_TOKEN };
+
+  if (type && type.indexOf('merchant_order') !== -1) {
+    var moRes = await fetch('https://api.mercadopago.com/merchant_orders/' + id, { headers: mpHeaders });
+    var order = await moRes.json();
+    if (!moRes.ok || !order.payments) return null;
+
+    var aprobado = order.payments.filter(function(p) { return p.status === 'approved'; })[0];
+    if (!aprobado) return null;
+
+    return { external_reference: order.external_reference };
+  }
+
+  var payRes = await fetch('https://api.mercadopago.com/v1/payments/' + id, { headers: mpHeaders });
+  var payment = await payRes.json();
+  if (!payRes.ok || payment.status !== 'approved') return null;
+
+  return { external_reference: payment.external_reference };
+}
+
 module.exports = async function handler(req, res) {
   /* Mercado Pago a veces hace un ping GET al configurar la notification_url */
   if (req.method === 'GET') return res.status(200).end();
@@ -18,24 +42,15 @@ module.exports = async function handler(req, res) {
   var query = req.query || {};
 
   var type = body.type || body.action || query.type || query.topic;
-  var paymentId = (body.data && body.data.id) || query['data.id'] || query.id;
+  var notifId = (body.data && body.data.id) || query['data.id'] || query.id;
 
-  /* Solo nos interesan notificaciones de pago; ignorar merchant_order, etc. */
-  if (!paymentId || (type && type !== 'payment' && type.indexOf('payment') === -1)) {
-    return res.status(200).end();
-  }
+  if (!notifId || !type) return res.status(200).end();
 
   try {
-    var mpRes = await fetch('https://api.mercadopago.com/v1/payments/' + paymentId, {
-      headers: { 'Authorization': 'Bearer ' + process.env.MP_ACCESS_TOKEN }
-    });
-    var payment = await mpRes.json();
+    var pago = await resolvePagoAprobado(type, notifId);
+    if (!pago) return res.status(200).end();
 
-    if (!mpRes.ok || payment.status !== 'approved') {
-      return res.status(200).end();
-    }
-
-    var pedidoId = payment.external_reference;
+    var pedidoId = pago.external_reference;
     if (!pedidoId) return res.status(200).end();
 
     var pedidoRes = await fetch(SB_URL + '/rest/v1/pedidos?id=eq.' + pedidoId + '&select=*', {

@@ -948,6 +948,7 @@
       <div class="user-dropdown" id="userDropdown">
         <button id="ddProfile"><span class="dicon">⚙️</span> Mi Perfil</button>
         <button id="ddOrders"><span class="dicon">📦</span> Mis Pedidos</button>
+        <button id="ddAdmin" style="display:none"><span class="dicon">📋</span> Todos los pedidos</button>
         <hr>
         <button class="dd-logout" id="ddLogout"><span class="dicon">🚪</span> Cerrar Sesión</button>
       </div>
@@ -1281,6 +1282,29 @@
   </div>
 </div>
 
+<!-- ═══════════════════ ADMIN: TODOS LOS PEDIDOS ═══════════════ -->
+<div class="auth-overlay" id="adminOverlay">
+  <div class="auth-modal auth-modal-wide">
+    <button class="auth-close" id="adminClose">✕</button>
+    <h2 class="auth-title">📋 TODOS LOS PEDIDOS</h2>
+    <div id="adminList" style="max-height:480px;overflow-y:auto;"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════ CONFIRMACION DE COMPRA ═════════════════ -->
+<div class="auth-overlay" id="pedidoConfirmadoOverlay">
+  <div class="auth-modal">
+    <button class="auth-close" id="pedidoConfirmadoClose">✕</button>
+    <h2 class="auth-title">✅ ¡PEDIDO CONFIRMADO!</h2>
+    <div id="pedidoConfirmadoBody"></div>
+    <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:6px;padding:12px 16px;margin-top:16px">
+      <p style="margin:0;color:#15803d;font-size:14px">
+        📦 Nos pondremos en contacto contigo para coordinar tu envío.
+      </p>
+    </div>
+  </div>
+</div>
+
 <!-- ═══════════════════ TOAST ══════════════════════════════════ -->
 <div class="toast" id="toast"></div>
 
@@ -1453,16 +1477,46 @@ document.getElementById('mpBtn').addEventListener('click', function() {
   openShippingModal();
 });
 
-/* mostrar toast cuando regresa de MP */
+/* ── MODAL DE CONFIRMACIÓN POST-COMPRA ───────────────────────── */
+function openPedidoConfirmadoModal(pedidoRecord) {
+  var bodyEl = document.getElementById('pedidoConfirmadoBody');
+  bodyEl.innerHTML =
+    '<p style="margin-top:0">Hola <strong>' + (pedidoRecord.nombre_envio || '') + '</strong>, gracias por tu compra.</p>' +
+    '<h3 style="border-bottom:1px solid #333;padding-bottom:8px">Productos</h3>' +
+    '<p style="margin:4px 0">' + (pedidoRecord.items_resumen || '—') + '</p>' +
+    '<h3 style="border-bottom:1px solid #333;padding-bottom:8px">Envío</h3>' +
+    '<p style="margin:4px 0">' + (pedidoRecord.direccion_envio || '—') + '</p>' +
+    '<h3 style="border-bottom:1px solid #333;padding-bottom:8px">Total</h3>' +
+    '<p style="font-size:1.3rem;font-weight:bold;color:var(--green)">$' + pedidoRecord.total + ' MXN</p>';
+  document.getElementById('pedidoConfirmadoOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closePedidoConfirmadoModal() {
+  document.getElementById('pedidoConfirmadoOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.getElementById('pedidoConfirmadoClose').addEventListener('click', closePedidoConfirmadoModal);
+document.getElementById('pedidoConfirmadoOverlay').addEventListener('click', function(e) {
+  if (e.target === this) closePedidoConfirmadoModal();
+});
+
+/* mostrar confirmación cuando regresa de MP */
 (function() {
   var params = new URLSearchParams(window.location.search);
   var pago = params.get('pago');
   if (pago === 'exito') {
-    showToast('✅ ¡Pago completado! Gracias por tu compra.');
-
     /* El webhook /api/mp-webhook (server-to-server con Mercado Pago) es quien
        marca el pedido como pagado, descuenta stock y envía los emails.
-       Aquí solo limpiamos el estado local y refrescamos el catálogo. */
+       Aquí solo mostramos la confirmación con los datos guardados localmente
+       al crear el pedido (funciona igual para invitados que para logueados,
+       sin depender de poder leer el pedido de vuelta desde Supabase). */
+    var pendingStr = localStorage.getItem('vjm_pending');
+    if (pendingStr) {
+      try {
+        var pending = JSON.parse(pendingStr);
+        if (pending.pedidoRecord) openPedidoConfirmadoModal(pending.pedidoRecord);
+      } catch (e) {}
+    }
     localStorage.removeItem('vjm_pending');
     setTimeout(function() {
       if (typeof loadJerseysFromSB === 'function') loadJerseysFromSB();
@@ -1870,10 +1924,13 @@ function setProfileMsg(msg, type) {
 }
 
 /* ── HEADER ───────────────────────────────────────────────────── */
+var ADMIN_EMAIL = 'oscareguia55@gmail.com';
+
 function updateHeaderAuth() {
   var loginBtnEl     = document.getElementById('loginBtn');
   var userMenuWrapEl = document.getElementById('userMenuWrap');
   var userNameEl     = document.getElementById('userName');
+  var ddAdminEl      = document.getElementById('ddAdmin');
 
   if (currentUser) {
     loginBtnEl.style.display      = 'none';
@@ -1882,9 +1939,11 @@ function updateHeaderAuth() {
       ? currentProfile.nombre.split(' ')[0]
       : currentUser.email.split('@')[0];
     userNameEl.textContent = nombre;
+    ddAdminEl.style.display = (currentUser.email === ADMIN_EMAIL) ? 'flex' : 'none';
   } else {
     loginBtnEl.style.display     = 'block';
     userMenuWrapEl.style.display = 'none';
+    ddAdminEl.style.display      = 'none';
   }
 }
 
@@ -2145,6 +2204,62 @@ function closeOrdersModal() {
 document.getElementById('ordersClose').addEventListener('click', closeOrdersModal);
 document.getElementById('ordersOverlay').addEventListener('click', function(e) {
   if (e.target === this) closeOrdersModal();
+});
+
+/* ══════════════════════════════════════════════════════
+   ADMIN: TODOS LOS PEDIDOS
+══════════════════════════════════════════════════════ */
+async function openAdminModal() {
+  document.getElementById('userDropdown').classList.remove('open');
+  if (!currentUser || currentUser.email !== ADMIN_EMAIL) return;
+
+  var listEl = document.getElementById('adminList');
+  listEl.innerHTML = '<p style="color:var(--gray);text-align:center;padding:2rem;">Cargando pedidos…</p>';
+  document.getElementById('adminOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+
+  var sessionRes = await sb.auth.getSession();
+  var token = sessionRes.data.session ? sessionRes.data.session.access_token : null;
+
+  var res = await fetch('/api/admin-pedidos', {
+    headers: { 'Authorization': 'Bearer ' + token }
+  });
+
+  if (!res.ok) {
+    listEl.innerHTML = '<p style="color:var(--gray);text-align:center;padding:2rem;">No se pudieron cargar los pedidos.</p>';
+    return;
+  }
+
+  var pedidos = await res.json();
+  if (!pedidos || pedidos.length === 0) {
+    listEl.innerHTML = '<p style="color:var(--gray);text-align:center;padding:2rem;">No hay pedidos todavía.</p>';
+    return;
+  }
+
+  listEl.innerHTML = pedidos.map(function(p) {
+    var fecha = new Date(p.created_at).toLocaleDateString('es-MX', {
+      day: '2-digit', month: 'long', year: 'numeric'
+    });
+    return '<div class="order-card">' +
+      '<div class="order-head">' +
+        '<span class="order-date">' + fecha + '</span>' +
+        '<span class="order-badge ' + p.estado + '">' + p.estado + '</span>' +
+      '</div>' +
+      '<p style="margin:4px 0"><strong>' + (p.nombre_envio || '—') + '</strong> · ' + (p.telefono_envio || '—') + '</p>' +
+      '<p style="margin:4px 0;color:var(--gray)">' + (p.direccion_envio || '—') + '</p>' +
+      '<div class="order-items">' + (p.items_resumen || '—') + '</div>' +
+      '<p class="order-total">Total: $' + p.total + ' MXN</p>' +
+    '</div>';
+  }).join('');
+}
+function closeAdminModal() {
+  document.getElementById('adminOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.getElementById('ddAdmin').addEventListener('click', openAdminModal);
+document.getElementById('adminClose').addEventListener('click', closeAdminModal);
+document.getElementById('adminOverlay').addEventListener('click', function(e) {
+  if (e.target === this) closeAdminModal();
 });
 
 /* ══════════════════════════════════════════════════════

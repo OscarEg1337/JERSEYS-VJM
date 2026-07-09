@@ -1,10 +1,13 @@
 var SB_URL = 'https://cxcyghxnwldqzdghizsd.supabase.co';
-var SB_KEY = 'sb_publishable_JFGxr4fGDNNa8cAiLG0S0w_nPP0cH1X';
 
+/* La tabla pedidos tiene RLS por user_id (auth.uid() = user_id) y no tiene
+   politica de UPDATE, asi que la clave publica no sirve para que el webhook
+   (que no corre como ningun usuario logueado) lea ni actualice pedidos.
+   Se necesita la Service Role Key, que ignora RLS, solo para uso server-side. */
 function sbHeaders() {
   return {
-    'apikey': SB_KEY,
-    'Authorization': 'Bearer ' + SB_KEY,
+    'apikey': process.env.SUPABASE_SERVICE_ROLE_KEY,
+    'Authorization': 'Bearer ' + process.env.SUPABASE_SERVICE_ROLE_KEY,
     'Content-Type': 'application/json'
   };
 }

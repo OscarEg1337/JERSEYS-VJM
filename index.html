@@ -2171,7 +2171,7 @@ async function openOrdersModal() {
   document.body.style.overflow = 'hidden';
 
   var res = await sb.from('pedidos')
-    .select('*, pedido_items(*)')
+    .select('*')
     .eq('user_id', currentUser.id)
     .order('created_at', { ascending: false });
 
@@ -2184,15 +2184,12 @@ async function openOrdersModal() {
     var fecha = new Date(p.created_at).toLocaleDateString('es-MX', {
       day: '2-digit', month: 'long', year: 'numeric'
     });
-    var items = (p.pedido_items || []).map(function(i) {
-      return i.nombre_producto + ' — Talla ' + i.talla + ' ($' + i.precio + ')';
-    }).join('<br>');
     return '<div class="order-card">' +
       '<div class="order-head">' +
         '<span class="order-date">' + fecha + '</span>' +
         '<span class="order-badge ' + p.estado + '">' + p.estado + '</span>' +
       '</div>' +
-      '<div class="order-items">' + (items || '—') + '</div>' +
+      '<div class="order-items">' + (p.items_resumen || '—') + '</div>' +
       '<p class="order-total">Total: $' + p.total + ' MXN</p>' +
     '</div>';
   }).join('');

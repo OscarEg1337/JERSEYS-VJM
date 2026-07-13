@@ -69,15 +69,17 @@ module.exports = async function handler(req, res) {
     var items = pedido.items_json || [];
     for (var i = 0; i < items.length; i++) {
       var productoId = items[i].producto_id;
-      var jerseyRes = await fetch(SB_URL + '/rest/v1/jerseys?id=eq.' + productoId + '&select=cantidad', {
+      var tabla = items[i].tipo === 'parche' ? 'parches' : 'jerseys';
+
+      var stockRes = await fetch(SB_URL + '/rest/v1/' + tabla + '?id=eq.' + productoId + '&select=cantidad', {
         headers: sbHeaders()
       });
-      var jerseys = await jerseyRes.json();
-      var jersey = jerseys && jerseys[0];
-      if (!jersey) continue;
+      var stockRows = await stockRes.json();
+      var row = stockRows && stockRows[0];
+      if (!row) continue;
 
-      var nuevaCantidad = jersey.cantidad - 1;
-      await fetch(SB_URL + '/rest/v1/jerseys?id=eq.' + productoId, {
+      var nuevaCantidad = row.cantidad - 1;
+      await fetch(SB_URL + '/rest/v1/' + tabla + '?id=eq.' + productoId, {
         method: 'PATCH',
         headers: sbHeaders(),
         body: JSON.stringify({ cantidad: nuevaCantidad, disponible: nuevaCantidad > 0 })

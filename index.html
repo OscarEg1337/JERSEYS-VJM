@@ -1118,6 +1118,14 @@
   <div class="parches-dots" id="parchesDots"></div>
 </section>
 
+<!-- ═══════════════════ PARCHES CATALOGO ═══════════════════════ -->
+<section id="parches" style="padding-top:3rem;">
+  <div style="padding:0 2rem 1rem;max-width:1400px;margin:0 auto;">
+    <h2 class="section-title">PARCHES</h2>
+  </div>
+  <div class="products-grid" id="parchesGrid" style="padding:0 2rem 4rem;max-width:1400px;margin:0 auto;"></div>
+</section>
+
 <!-- ═══════════════════ FILTERS ════════════════════════════════ -->
 <div class="filters-wrap">
   <div class="filters-row">
@@ -1502,6 +1510,10 @@ var PH_COLORS = {
   2: { bg: 'linear-gradient(135deg,#003087,#001a55)', fg: '#fff' }
 };
 
+/* ── PARCHES (cargados desde Supabase) ────────────────────────── */
+var PARCHES = [];
+var PARCHE_PH_COLORS = {};
+
 /* ── CART STATE ──────────────────────────────────────────────── */
 var cart = [];
 var cartIdSeq = 1;
@@ -1513,7 +1525,15 @@ function cartTotal() {
 function addToCart(pid) {
   var p = PRODUCTS.find(function(x) { return x.id === pid; });
   if (!p) return;
-  cart.push(Object.assign({}, p, { _cid: cartIdSeq++ }));
+  cart.push(Object.assign({}, p, { _cid: cartIdSeq++, _tipo: 'jersey' }));
+  syncCartUI();
+  showToast('✅  ' + p.nombre + ' agregado al carrito');
+}
+
+function addParcheToCart(pid) {
+  var p = PARCHES.find(function(x) { return x.id === pid; });
+  if (!p) return;
+  cart.push(Object.assign({}, p, { _cid: cartIdSeq++, _tipo: 'parche' }));
   syncCartUI();
   showToast('✅  ' + p.nombre + ' agregado al carrito');
 }
@@ -1550,7 +1570,7 @@ function renderCartList() {
   totalEl.textContent  = '$' + cartTotal() + ' MXN';
 
   listEl.innerHTML = cart.map(function(item) {
-    var pc = PH_COLORS[item.id] || { bg: '#333', fg: '#fff' };
+    var pc = (item._tipo === 'parche' ? PARCHE_PH_COLORS[item.id] : PH_COLORS[item.id]) || { bg: '#333', fg: '#fff' };
     var imgHtml = item.imagen
       ? '<img src="' + item.imagen + '" class="ci-img" alt="" ' +
           'onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">' +
@@ -1561,7 +1581,7 @@ function renderCartList() {
       imgHtml +
       '<div class="ci-info">' +
         '<div class="ci-name">' + item.nombre + '</div>' +
-        '<div class="ci-talla">Talla: ' + item.talla + '</div>' +
+        (item.talla ? '<div class="ci-talla">Talla: ' + item.talla + '</div>' : '') +
         '<div class="ci-price">$' + item.precio + ' MXN</div>' +
       '</div>' +
       '<button class="ci-remove" onclick="removeFromCart(' + item._cid + ')">×</button>' +
@@ -1632,6 +1652,7 @@ document.getElementById('pedidoConfirmadoOverlay').addEventListener('click', fun
     localStorage.removeItem('vjm_pending');
     setTimeout(function() {
       if (typeof loadJerseysFromSB === 'function') loadJerseysFromSB();
+      if (typeof loadParchesFromSB === 'function') loadParchesFromSB();
     }, 2000);
     cart = [];
     syncCartUI();
@@ -1995,6 +2016,79 @@ async function loadJerseysFromSB() {
   renderProducts(PRODUCTS);
 }
 
+/* ── PARCHES: cargar y renderizar ─────────────────────────────── */
+async function loadParchesFromSB() {
+  var res = await sb.from('parches').select('*').order('id');
+  if (res.error || !res.data) return;
+
+  var fallbackGrads = [
+    'linear-gradient(135deg,#C9A84C,#8a6d1f)',
+    'linear-gradient(135deg,#333,#111)',
+    'linear-gradient(135deg,#078F47,#045c2e)'
+  ];
+
+  PARCHES = res.data.map(function(p, i) {
+    PARCHE_PH_COLORS[p.id] = { bg: fallbackGrads[i % fallbackGrads.length], fg: '#fff' };
+    return {
+      id:          p.id,
+      nombre:      'Parche ' + (p.tipo || 'Mundial') + ' — ' + (p.color || ''),
+      tipo:        p.tipo || 'Mundial',
+      color:       p.color || '',
+      anio:        p.anio,
+      precio:      p.precio,
+      imagen:      p.imagen || null,
+      bandera:     '🏅',
+      descripcion: p.descripcion || '',
+      disponible:  p.disponible !== false,
+      cantidad:    p.cantidad !== undefined ? p.cantidad : 1
+    };
+  });
+
+  renderParches(PARCHES);
+}
+
+function renderParches(list) {
+  var grid = document.getElementById('parchesGrid');
+  if (!grid) return;
+
+  if (list.length === 0) { grid.innerHTML = ''; return; }
+
+  grid.innerHTML = list.map(function(p) {
+    var vendido = p.disponible === false || p.cantidad <= 0;
+    var pc = PARCHE_PH_COLORS[p.id] || { bg: '#333', fg: '#fff' };
+
+    var imgHtml = p.imagen
+      ? '<img src="' + p.imagen + '" alt="' + p.nombre + '" loading="lazy" ' +
+          'style="width:100%;height:100%;object-fit:cover' + (vendido ? ';filter:grayscale(.7)' : '') + '" ' +
+          'onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">' +
+        '<div class="card-placeholder" style="display:none;background:' + pc.bg + '">' + p.bandera + '</div>'
+      : '<div class="card-placeholder" style="background:' + pc.bg + '">' + p.bandera + '</div>';
+
+    var badgeVendido = vendido
+      ? '<div style="position:absolute;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;">' +
+          '<span style="background:var(--red);color:#fff;font-family:\'Bebas Neue\',cursive;font-size:1.4rem;letter-spacing:3px;padding:8px 22px;border-radius:6px;">VENDIDO</span>' +
+        '</div>'
+      : '';
+
+    var botonHtml = vendido
+      ? '<button class="btn-add-card" disabled style="opacity:.35;cursor:not-allowed;width:100%;">NO DISPONIBLE</button>'
+      : '<button class="btn-add-card" onclick="addParcheToCart(' + p.id + ')" style="width:100%;">🛒 AGREGAR</button>';
+
+    return '<div class="product-card' + (vendido ? ' sold' : '') + '" data-id="' + p.id + '">' +
+      '<div class="card-img-wrap">' +
+        imgHtml +
+        '<div class="badge-country">🏆 ' + p.anio + '</div>' +
+        badgeVendido +
+      '</div>' +
+      '<div class="card-body">' +
+        '<h3 class="card-name">' + p.nombre + '</h3>' +
+        '<div class="card-price">' + (vendido ? '<span style="color:var(--red);font-size:1rem;">AGOTADO</span>' : '$' + p.precio + ' <small>MXN</small>') + '</div>' +
+        '<div class="card-actions">' + botonHtml + '</div>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
 function actualizarFiltros() {
   var flagMap = {};
   PRODUCTS.forEach(function(p) { if (p.pais) flagMap[p.pais] = p.bandera; });
@@ -2022,6 +2116,7 @@ function actualizarFiltros() {
 
 /* arrancar carga al iniciar la página */
 loadJerseysFromSB();
+loadParchesFromSB();
 
 /* ── MENSAJES ─────────────────────────────────────────────────── */
 function setAuthMsg(msg, type) {
@@ -2671,8 +2766,8 @@ document.getElementById('shippingForm').addEventListener('submit', async functio
       email_envio:      envio.email,
       tipo_envio:       tipoEnvio,
       costo_envio:      costoEnvio,
-      items_resumen:    cart.map(function(i){ return i.nombre + ' (' + (i.talla||'') + ')'; }).join(', '),
-      items_json:       cart.map(function(i){ return { producto_id: i.id }; })
+      items_resumen:    cart.map(function(i){ return i.talla ? i.nombre + ' (' + i.talla + ')' : i.nombre; }).join(', '),
+      items_json:       cart.map(function(i){ return { producto_id: i.id, tipo: i._tipo || 'jersey' }; })
     };
     /* Solo agregar user_id si está logueado */
     if (currentUser) {
@@ -2697,7 +2792,7 @@ document.getElementById('shippingForm').addEventListener('submit', async functio
       tipo_envio:      tipoEnvio,
       costo_envio:     costoEnvio,
       total:           totalFinal,
-      items_resumen:   cart.map(function(i){ return i.nombre + ' (' + (i.talla||'') + ')'; }).join(', '),
+      items_resumen:   cart.map(function(i){ return i.talla ? i.nombre + ' (' + i.talla + ')' : i.nombre; }).join(', '),
       estado:          'pagado'
     }
   }));

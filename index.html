@@ -290,6 +290,67 @@
       .hero-watermark { font-size: 45vw; }
     }
 
+    /* ── PARCHES MUNDIAL BANNER ────────────────────────────── */
+    .parches-carousel {
+      position: relative; min-height: 460px; overflow: hidden;
+      display: flex; align-items: center;
+      padding: 3rem 2rem;
+    }
+    .parches-slides { position: absolute; inset: 0; }
+    .parches-slide {
+      position: absolute; inset: 0;
+      background-size: cover; background-position: center;
+      opacity: 0; transition: opacity 1.4s ease-in-out;
+    }
+    .parches-slide.active { opacity: 1; }
+    .parches-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(90deg, rgba(10,10,10,.94) 5%, rgba(10,10,10,.6) 55%, rgba(10,10,10,.2) 100%);
+    }
+    .parches-logo-float {
+      position: absolute; top: 28px; left: 28px; z-index: 2;
+      height: 72px; width: auto;
+      filter: drop-shadow(0 0 22px rgba(201,168,76,.5));
+      animation: parchesFloat 4.5s ease-in-out infinite;
+    }
+    @keyframes parchesFloat {
+      0%, 100% { transform: translateY(0) rotate(-3deg); }
+      50%      { transform: translateY(-12px) rotate(3deg); }
+    }
+    .parches-content { position: relative; z-index: 2; max-width: 620px; }
+    .parches-title {
+      font-family: 'Bebas Neue', cursive;
+      font-size: clamp(1.9rem, 4.2vw, 3.4rem);
+      letter-spacing: 2px; line-height: 1.1; margin-bottom: 1.8rem;
+    }
+    .parches-title span { color: var(--gold); }
+    .parches-badges { display: flex; gap: 2rem; flex-wrap: wrap; }
+    .parches-badge {
+      display: flex; flex-direction: column; align-items: center; gap: .5rem;
+      font-size: 1.5rem;
+    }
+    .parches-badge span {
+      font-family: 'Bebas Neue', cursive;
+      font-size: .78rem; letter-spacing: 1.5px; text-transform: uppercase;
+      color: var(--gray);
+    }
+    .parches-dots {
+      position: absolute; bottom: 22px; left: 50%; transform: translateX(-50%);
+      display: flex; gap: 8px; z-index: 2;
+    }
+    .parches-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: rgba(255,255,255,.3); border: none; cursor: pointer;
+      transition: background .25s;
+    }
+    .parches-dot.active { background: var(--gold); }
+
+    @media (max-width: 768px) {
+      .parches-carousel  { min-height: 400px; padding: 2rem 1.2rem; }
+      .parches-logo-float { height: 48px; top: 16px; left: 16px; }
+      .parches-badges { gap: 1.2rem; }
+    }
+
     .btn {
       display: inline-block;
       padding: 14px 42px;
@@ -1044,6 +1105,29 @@
   </div>
 </section>
 
+<!-- ═══════════════════ PARCHES MUNDIAL BANNER ═════════════════ -->
+<section class="parches-carousel" id="parchesCarousel">
+  <div class="parches-slides" id="parchesSlides"></div>
+  <div class="parches-overlay"></div>
+
+  <img src="LOGO/Logo.png" alt="VJM" class="parches-logo-float"
+       onerror="this.style.display='none'">
+
+  <div class="parches-content">
+    <h2 class="parches-title">
+      LOS MEJORES TIENEN LOS<br>
+      <span>PARCHES</span> DEL MUNDIAL
+    </h2>
+    <div class="parches-badges">
+      <div class="parches-badge">🛡️<span>Diseños de élite</span></div>
+      <div class="parches-badge">🏆<span>Llevan la historia</span></div>
+      <div class="parches-badge">🌐<span>Símbolo de campeones</span></div>
+    </div>
+  </div>
+
+  <div class="parches-dots" id="parchesDots"></div>
+</section>
+
 <!-- ═══════════════════ FILTERS ════════════════════════════════ -->
 <div class="filters-wrap">
   <div class="filters-row">
@@ -1323,6 +1407,44 @@
 
 /* ── DATA ─────────────────────────────────────────────────────── */
 var WA_NUM = '528116544571';
+
+/* ── CARRUSEL DE PARCHES ──────────────────────────────────────── */
+var PARCHES_IMAGES = [
+  'Jerseys/Parches/parche-mundial-01.png'
+];
+(function initParchesCarousel() {
+  var slidesEl = document.getElementById('parchesSlides');
+  var dotsEl   = document.getElementById('parchesDots');
+  if (!slidesEl) return;
+
+  slidesEl.innerHTML = PARCHES_IMAGES.map(function(src, i) {
+    return '<div class="parches-slide' + (i === 0 ? ' active' : '') + '" style="background-image:url(\'' + src + '\')"></div>';
+  }).join('');
+
+  if (PARCHES_IMAGES.length < 2) return;
+
+  dotsEl.innerHTML = PARCHES_IMAGES.map(function(_, i) {
+    return '<button class="parches-dot' + (i === 0 ? ' active' : '') + '" data-i="' + i + '" aria-label="Foto ' + (i + 1) + '"></button>';
+  }).join('');
+
+  var idx    = 0;
+  var slides = slidesEl.querySelectorAll('.parches-slide');
+  var dots   = dotsEl.querySelectorAll('.parches-dot');
+
+  function goTo(i) {
+    slides[idx].classList.remove('active');
+    dots[idx].classList.remove('active');
+    idx = i;
+    slides[idx].classList.add('active');
+    dots[idx].classList.add('active');
+  }
+
+  dots.forEach(function(d) {
+    d.addEventListener('click', function() { goTo(parseInt(d.dataset.i, 10)); });
+  });
+
+  setInterval(function() { goTo((idx + 1) % PARCHES_IMAGES.length); }, 5000);
+})();
 
 /* dominios de correos temporales/falsos bloqueados */
 var DOMINIOS_BLOQUEADOS = [

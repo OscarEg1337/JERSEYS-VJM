@@ -301,8 +301,14 @@
       position: absolute; inset: 0;
       background-size: cover; background-position: center;
       opacity: 0; transition: opacity 1.4s ease-in-out;
+      animation: parchesKenBurns 14s ease-in-out infinite;
     }
     .parches-slide.active { opacity: 1; }
+    @keyframes parchesKenBurns {
+      0%   { transform: scale(1)     translate(0, 0); }
+      50%  { transform: scale(1.12)  translate(-2%, -1%); }
+      100% { transform: scale(1)     translate(0, 0); }
+    }
     .parches-overlay {
       position: absolute; inset: 0;
       background: linear-gradient(90deg, rgba(10,10,10,.94) 5%, rgba(10,10,10,.6) 55%, rgba(10,10,10,.2) 100%);
@@ -324,16 +330,6 @@
       letter-spacing: 2px; line-height: 1.1; margin-bottom: 1.8rem;
     }
     .parches-title span { color: var(--gold); }
-    .parches-badges { display: flex; gap: 2rem; flex-wrap: wrap; }
-    .parches-badge {
-      display: flex; flex-direction: column; align-items: center; gap: .5rem;
-      font-size: 1.5rem;
-    }
-    .parches-badge span {
-      font-family: 'Bebas Neue', cursive;
-      font-size: .78rem; letter-spacing: 1.5px; text-transform: uppercase;
-      color: var(--gray);
-    }
     .parches-dots {
       position: absolute; bottom: 22px; left: 50%; transform: translateX(-50%);
       display: flex; gap: 8px; z-index: 2;
@@ -348,7 +344,6 @@
     @media (max-width: 768px) {
       .parches-carousel  { min-height: 400px; padding: 2rem 1.2rem; }
       .parches-logo-float { height: 48px; top: 16px; left: 16px; }
-      .parches-badges { gap: 1.2rem; }
     }
 
     .btn {
@@ -1118,11 +1113,6 @@
       LOS MEJORES TIENEN LOS<br>
       <span>PARCHES</span> DEL MUNDIAL
     </h2>
-    <div class="parches-badges">
-      <div class="parches-badge">🛡️<span>Diseños de élite</span></div>
-      <div class="parches-badge">🏆<span>Llevan la historia</span></div>
-      <div class="parches-badge">🌐<span>Símbolo de campeones</span></div>
-    </div>
   </div>
 
   <div class="parches-dots" id="parchesDots"></div>

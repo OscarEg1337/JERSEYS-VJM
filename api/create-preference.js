@@ -1,3 +1,34 @@
+var SB_URL = 'https://cxcyghxnwldqzdghizsd.supabase.co';
+var SB_KEY = 'sb_publishable_JFGxr4fGDNNa8cAiLG0S0w_nPP0cH1X';
+
+/* Costos de envio fijos, definidos aqui y no por el cliente */
+var ENVIO_PRECIOS = { correos: 70, dhl: 250 };
+
+/* Resuelve nombre y precio REALES de cada item, ignorando lo que mande el
+   navegador. Devuelve null si el item no es valido (id inexistente,
+   agotado, metodo de envio desconocido), para poder rechazar la preferencia. */
+async function resolverItem(item) {
+  if (item._tipo === 'envio') {
+    var costo = ENVIO_PRECIOS[item.metodo];
+    if (costo === undefined) return null;
+    return {
+      title: item.metodo === 'dhl' ? 'Envío DHL Express' : 'Envío Correos de México',
+      precio: costo
+    };
+  }
+
+  var tabla = item._tipo === 'parche' ? 'parches' : 'jerseys';
+  var url = SB_URL + '/rest/v1/' + tabla + '?id=eq.' + encodeURIComponent(item.id) + '&select=nombre,precio,disponible';
+  var res = await fetch(url, { headers: { apikey: SB_KEY, Authorization: 'Bearer ' + SB_KEY } });
+  if (!res.ok) return null;
+
+  var rows = await res.json();
+  var row = rows && rows[0];
+  if (!row || row.disponible === false) return null;
+
+  return { title: row.nombre, precio: row.precio };
+}
+
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -11,10 +42,15 @@ module.exports = async function handler(req, res) {
 
   const origin = 'https://' + req.headers.host;
 
+  const resueltos = await Promise.all(items.map(resolverItem));
+  if (resueltos.some(function(r) { return !r; })) {
+    return res.status(400).json({ error: 'Uno o más productos ya no están disponibles' });
+  }
+
   const preference = {
-    items: items.map(function(item) {
+    items: resueltos.map(function(item) {
       return {
-        title: item.nombre,
+        title: item.title,
         quantity: 1,
         unit_price: Number(item.precio),
         currency_id: 'MXN'

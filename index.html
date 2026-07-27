@@ -2802,7 +2802,9 @@ document.getElementById('shippingForm').addEventListener('submit', async functio
   /* items para MP: jerseys + envío como línea extra */
   var itemsMP = cart.concat([{
     nombre: tipoEnvio === 'dhl' ? 'Envío DHL Express' : 'Envío Correos de México',
-    precio: costoEnvio
+    precio: costoEnvio,
+    _tipo: 'envio',
+    metodo: tipoEnvio
   }]);
 
   /* ir a Mercado Pago */

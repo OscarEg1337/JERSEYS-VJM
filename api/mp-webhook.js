@@ -1,4 +1,34 @@
+var crypto = require('crypto');
+
 var SB_URL = 'https://cxcyghxnwldqzdghizsd.supabase.co';
+
+/* Valida que la notificacion venga realmente de Mercado Pago, usando la
+   firma HMAC que manda en el header x-signature. Sin esto, cualquiera podria
+   mandar POSTs falsos a este endpoint (aunque no logren aprobar pagos falsos,
+   si permiten floodear el servidor y gastar cuota de llamadas a MP/Supabase).
+   Formula segun la doc oficial de MP (Tus integraciones > Webhooks > Firma). */
+function firmaValida(req) {
+  var xSignature = req.headers['x-signature'];
+  var xRequestId = req.headers['x-request-id'];
+  if (!xSignature || !xRequestId || !process.env.MP_WEBHOOK_SECRET) return false;
+
+  var ts, hash;
+  xSignature.split(',').forEach(function(part) {
+    var kv = part.split('=');
+    if (kv[0].trim() === 'ts') ts = kv[1] && kv[1].trim();
+    if (kv[0].trim() === 'v1') hash = kv[1] && kv[1].trim();
+  });
+  if (!ts || !hash) return false;
+
+  var dataId = String((req.query && req.query['data.id']) || '').toLowerCase();
+  var manifest = 'id:' + dataId + ';request-id:' + xRequestId + ';ts:' + ts + ';';
+  var hmac = crypto.createHmac('sha256', process.env.MP_WEBHOOK_SECRET).update(manifest).digest('hex');
+
+  var hashBuf = Buffer.from(hash, 'hex');
+  var hmacBuf = Buffer.from(hmac, 'hex');
+  if (hashBuf.length !== hmacBuf.length) return false;
+  return crypto.timingSafeEqual(hashBuf, hmacBuf);
+}
 
 /* La tabla pedidos tiene RLS por user_id (auth.uid() = user_id) y no tiene
    politica de UPDATE, asi que la clave publica no sirve para que el webhook
@@ -40,6 +70,7 @@ module.exports = async function handler(req, res) {
   /* Mercado Pago a veces hace un ping GET al configurar la notification_url */
   if (req.method === 'GET') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).end();
+  if (!firmaValida(req)) return res.status(401).end();
 
   var body = req.body || {};
   var query = req.query || {};

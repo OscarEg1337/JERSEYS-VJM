@@ -1,7 +1,23 @@
+/* Escapa HTML para que datos de pedidos (nombre, direccion, etc.) no puedan
+   inyectar markup/links en los emails que se envian. */
+function esc(v) {
+  return String(v == null ? '' : v)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
 module.exports = async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).end();
+
+  /* Este endpoint solo debe ser llamado server-to-server por mp-webhook.js,
+     nunca directamente desde el navegador: manda emails con datos que
+     recibe sin validar, asi que exponerlo publicamente permitiria usarlo
+     como relay de correo/phishing con la cuenta de Resend de la tienda. */
+  const secret = req.headers['x-internal-secret'];
+  if (!secret || secret !== process.env.INTERNAL_API_SECRET) {
+    return res.status(403).json({ error: 'No autorizado' });
+  }
 
   const { type, record, old_record } = req.body || {};
 
@@ -9,7 +25,9 @@ module.exports = async function handler(req, res) {
   if (!record || record.estado !== 'pagado') return res.status(200).end();
   if (old_record && old_record.estado === 'pagado') return res.status(200).end();
 
-  const p = record;
+  const p = Object.fromEntries(
+    Object.entries(record).map(function(entry) { return [entry[0], esc(entry[1])]; })
+  );
   const tipoEnvio = p.tipo_envio === 'dhl' ? 'DHL Express ($250 MXN)' : 'Correos de México ($70 MXN)';
 
   /* ── Email para Oscar (admin) ── */

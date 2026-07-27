@@ -97,7 +97,10 @@ module.exports = async function handler(req, res) {
       var origin = 'https://' + req.headers.host;
       await fetch(origin + '/api/notificar-venta', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'x-internal-secret': process.env.INTERNAL_API_SECRET
+        },
         body: JSON.stringify({
           type: 'UPDATE',
           record: pedidoActualizado,

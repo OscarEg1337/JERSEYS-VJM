@@ -2370,6 +2370,15 @@ document.getElementById('changePassForm').addEventListener('submit', async funct
 /* ══════════════════════════════════════════════════════
    PEDIDOS
 ══════════════════════════════════════════════════════ */
+/* Escapa HTML: nombre_envio/direccion_envio/etc. los escribe libremente
+   el cliente en el checkout, asi que no se pueden insertar tal cual en
+   innerHTML (permitiria XSS contra quien vea el panel de pedidos). */
+function esc(v) {
+  return String(v == null ? '' : v)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
 async function openOrdersModal() {
   document.getElementById('userDropdown').classList.remove('open');
   if (!currentUser) return;
@@ -2395,11 +2404,11 @@ async function openOrdersModal() {
     });
     return '<div class="order-card">' +
       '<div class="order-head">' +
-        '<span class="order-date">' + fecha + '</span>' +
-        '<span class="order-badge ' + p.estado + '">' + p.estado + '</span>' +
+        '<span class="order-date">' + esc(fecha) + '</span>' +
+        '<span class="order-badge ' + esc(p.estado) + '">' + esc(p.estado) + '</span>' +
       '</div>' +
-      '<div class="order-items">' + (p.items_resumen || '—') + '</div>' +
-      '<p class="order-total">Total: $' + p.total + ' MXN</p>' +
+      '<div class="order-items">' + esc(p.items_resumen || '—') + '</div>' +
+      '<p class="order-total">Total: $' + esc(p.total) + ' MXN</p>' +
     '</div>';
   }).join('');
 }
@@ -2448,13 +2457,13 @@ async function openAdminModal() {
     });
     return '<div class="order-card">' +
       '<div class="order-head">' +
-        '<span class="order-date">' + fecha + '</span>' +
-        '<span class="order-badge ' + p.estado + '">' + p.estado + '</span>' +
+        '<span class="order-date">' + esc(fecha) + '</span>' +
+        '<span class="order-badge ' + esc(p.estado) + '">' + esc(p.estado) + '</span>' +
       '</div>' +
-      '<p style="margin:4px 0"><strong>' + (p.nombre_envio || '—') + '</strong> · ' + (p.telefono_envio || '—') + '</p>' +
-      '<p style="margin:4px 0;color:var(--gray)">' + (p.direccion_envio || '—') + '</p>' +
-      '<div class="order-items">' + (p.items_resumen || '—') + '</div>' +
-      '<p class="order-total">Total: $' + p.total + ' MXN</p>' +
+      '<p style="margin:4px 0"><strong>' + esc(p.nombre_envio || '—') + '</strong> · ' + esc(p.telefono_envio || '—') + '</p>' +
+      '<p style="margin:4px 0;color:var(--gray)">' + esc(p.direccion_envio || '—') + '</p>' +
+      '<div class="order-items">' + esc(p.items_resumen || '—') + '</div>' +
+      '<p class="order-total">Total: $' + esc(p.total) + ' MXN</p>' +
     '</div>';
   }).join('');
 }

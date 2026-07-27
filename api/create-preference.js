@@ -30,10 +30,8 @@ async function resolverItem(item) {
 }
 
 module.exports = async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-
+  /* Sin CORS: el frontend llama a esta API desde el mismo dominio, asi que
+     no hace falta permitir que otros sitios la invoquen desde el navegador. */
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 

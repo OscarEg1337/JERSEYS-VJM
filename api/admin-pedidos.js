@@ -3,10 +3,8 @@ var SB_KEY = 'sb_publishable_JFGxr4fGDNNa8cAiLG0S0w_nPP0cH1X';
 var ADMIN_EMAIL = 'oscareguia55@gmail.com';
 
 module.exports = async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-
+  /* Sin CORS: este endpoint devuelve datos de pedidos (nombres, direcciones,
+     telefonos) y solo lo llama el panel de admin desde el mismo dominio. */
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'GET') return res.status(405).end();
 

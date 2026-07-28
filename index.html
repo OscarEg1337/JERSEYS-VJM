@@ -225,7 +225,9 @@
       background: #111; border: 1px solid #222;
       border-radius: 14px; overflow: hidden;
       box-shadow: 0 24px 70px rgba(0,0,0,.7);
+      transition: opacity .45s ease;
     }
+    .hj-card.hj-fade { opacity: 0; }
     .hj-card img {
       width: 100%; height: 280px;
       object-fit: contain; object-position: center;
@@ -1985,12 +1987,59 @@ var currentProfile = null;
 /* ══════════════════════════════════════════════════════
    CARGAR JERSEYS DESDE SUPABASE
 ══════════════════════════════════════════════════════ */
+/* ── HERO: carrusel de jerseys flotantes ──────────────────────── */
+var heroCarouselTimer = null;
+function initHeroCarousel() {
+  var mainEl = document.querySelector('.hj-main');
+  var secEl  = document.querySelector('.hj-secondary');
+  if (!mainEl || !secEl) return;
+
+  var slides = PRODUCTS.filter(function(p) { return p.disponible !== false; }).slice(0, 10);
+  if (slides.length < 2) return;
+
+  if (heroCarouselTimer) clearInterval(heroCarouselTimer);
+  var idx = 0;
+
+  function paint(el, p, esNueva) {
+    var img   = el.querySelector('img');
+    var name  = el.querySelector('.hj-card-name');
+    var price = el.querySelector('.hj-card-price');
+    var badge = el.querySelector('.hj-badge');
+    img.src = p.imagen || '';
+    img.alt = p.nombre;
+    name.textContent = p.nombre;
+    price.textContent = '$' + p.precio + ' MXN';
+    if (badge) {
+      if (esNueva) { badge.className = 'hj-badge hj-badge-new'; badge.textContent = 'NUEVO'; }
+      else { badge.className = 'hj-badge hj-badge-club'; badge.textContent = (p.bandera || '🌎') + ' ' + (p.pais || ''); }
+    }
+  }
+
+  function showPair() {
+    paint(mainEl, slides[idx % slides.length], true);
+    paint(secEl, slides[(idx + 1) % slides.length], false);
+    idx = (idx + 2) % slides.length;
+  }
+
+  showPair();
+  heroCarouselTimer = setInterval(function() {
+    mainEl.classList.add('hj-fade');
+    secEl.classList.add('hj-fade');
+    setTimeout(function() {
+      showPair();
+      mainEl.classList.remove('hj-fade');
+      secEl.classList.remove('hj-fade');
+    }, 450);
+  }, 4000);
+}
+
 async function loadJerseysFromSB() {
   var res = await sb.from('jerseys').select('*').order('id');
 
   if (res.error || !res.data || res.data.length === 0) {
     /* fallback al array hardcodeado si falla la conexión */
     renderProducts(PRODUCTS);
+    initHeroCarousel();
     return;
   }
 
@@ -2041,6 +2090,7 @@ async function loadJerseysFromSB() {
 
   /* renderizar catálogo */
   renderProducts(PRODUCTS);
+  initHeroCarousel();
 }
 
 /* ── PARCHES: cargar y renderizar ─────────────────────────────── */

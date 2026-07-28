@@ -1994,11 +1994,24 @@ function initHeroCarousel() {
   var secEl  = document.querySelector('.hj-secondary');
   if (!mainEl || !secEl) return;
 
-  var slides = PRODUCTS.filter(function(p) { return p.disponible !== false; }).slice(0, 10);
+  var slides = PRODUCTS.filter(function(p) { return p.disponible !== false; });
   if (slides.length < 2) return;
 
   if (heroCarouselTimer) clearInterval(heroCarouselTimer);
-  var idx = 0;
+  var ultimoPar = [-1, -1];
+
+  function pickTwoRandom() {
+    var i = Math.floor(Math.random() * slides.length);
+    var j;
+    do { j = Math.floor(Math.random() * slides.length); } while (j === i);
+    /* evitar repetir exactamente el mismo par seguido (solo si hay de sobra para variar) */
+    if (slides.length > 2 &&
+        ((i === ultimoPar[0] && j === ultimoPar[1]) || (i === ultimoPar[1] && j === ultimoPar[0]))) {
+      return pickTwoRandom();
+    }
+    ultimoPar = [i, j];
+    return [slides[i], slides[j]];
+  }
 
   function paint(el, p, esNueva) {
     var img   = el.querySelector('img');
@@ -2016,9 +2029,9 @@ function initHeroCarousel() {
   }
 
   function showPair() {
-    paint(mainEl, slides[idx % slides.length], true);
-    paint(secEl, slides[(idx + 1) % slides.length], false);
-    idx = (idx + 2) % slides.length;
+    var par = pickTwoRandom();
+    paint(mainEl, par[0], true);
+    paint(secEl, par[1], false);
   }
 
   showPair();

@@ -2244,10 +2244,11 @@ function updateHeaderAuth() {
   if (currentUser) {
     loginBtnEl.style.display      = 'none';
     userMenuWrapEl.style.display  = 'flex';
-    var nombre = (currentProfile && currentProfile.nombre)
-      ? currentProfile.nombre.split(' ')[0]
-      : currentUser.email.split('@')[0];
-    userNameEl.textContent = nombre;
+    var meta = currentUser.user_metadata || {};
+    var nombreCompleto = (currentProfile && currentProfile.nombre)
+      || meta.full_name || meta.name
+      || currentUser.email.split('@')[0];
+    userNameEl.textContent = nombreCompleto.split(' ')[0];
     ddAdminEl.style.display = (currentUser.email === ADMIN_EMAIL) ? 'flex' : 'none';
   } else {
     loginBtnEl.style.display     = 'block';
@@ -2259,7 +2260,19 @@ function updateHeaderAuth() {
 async function loadProfile() {
   if (!currentUser) return;
   var res = await sb.from('profiles').select('*').eq('id', currentUser.id).maybeSingle();
-  if (res.data) { currentProfile = res.data; updateHeaderAuth(); }
+  if (res.data) { currentProfile = res.data; }
+
+  /* si entro con Google y el perfil no tiene nombre guardado, usar el de
+     su cuenta de Google (una sola vez, para que quede fijo en adelante) */
+  if (currentProfile && !currentProfile.nombre) {
+    var meta = currentUser.user_metadata || {};
+    var nombreGoogle = meta.full_name || meta.name;
+    if (nombreGoogle) {
+      var upd = await sb.from('profiles').upsert({ id: currentUser.id, nombre: nombreGoogle }).select().maybeSingle();
+      if (upd.data) currentProfile = upd.data;
+    }
+  }
+  updateHeaderAuth();
 }
 
 /* ── ESTADO AUTH ──────────────────────────────────────────────── */

@@ -2013,6 +2013,16 @@ function initHeroCarousel() {
     return [slides[i], slides[j]];
   }
 
+  /* precarga la imagen para que el fundido no se corte a medias mientras carga */
+  function preload(src) {
+    return new Promise(function(resolve) {
+      if (!src) return resolve();
+      var im = new Image();
+      im.onload = resolve; im.onerror = resolve;
+      im.src = src;
+    });
+  }
+
   function paint(el, p, esNueva) {
     var img   = el.querySelector('img');
     var name  = el.querySelector('.hj-card-name');
@@ -2030,19 +2040,19 @@ function initHeroCarousel() {
 
   function showPair() {
     var par = pickTwoRandom();
-    paint(mainEl, par[0], true);
-    paint(secEl, par[1], false);
+    Promise.all([preload(par[0].imagen), preload(par[1].imagen)]).then(function() {
+      paint(mainEl, par[0], true);
+      paint(secEl, par[1], false);
+      mainEl.classList.remove('hj-fade');
+      secEl.classList.remove('hj-fade');
+    });
   }
 
   showPair();
   heroCarouselTimer = setInterval(function() {
     mainEl.classList.add('hj-fade');
     secEl.classList.add('hj-fade');
-    setTimeout(function() {
-      showPair();
-      mainEl.classList.remove('hj-fade');
-      secEl.classList.remove('hj-fade');
-    }, 450);
+    setTimeout(showPair, 450);
   }, 4000);
 }
 

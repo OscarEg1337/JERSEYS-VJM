@@ -1,38 +1,27 @@
--- Insertar Monterrey (Visitante 2008) y Real Madrid (2023-24, Rodrygo #11)
+-- Corrección: el "Real Madrid 2023-24 - Rodrygo #11" ya existía en el catálogo
+-- (se insertó por error como duplicado). Se borra ese duplicado y se agrega
+-- el jersey correcto que faltaba: Real Madrid Local 2022-23, Alaba #4.
+
+delete from jerseys
+where nombre = 'Real Madrid 2023-24 - Rodrygo #11';
+
 insert into jerseys
   (nombre, club, pais, bandera, liga, marca, talla, anio, precio, color, imagen, imagen_espalda, descripcion, disponible, cantidad)
 values
   (
-    'Monterrey Visitante 2008',
-    'CF Monterrey',
-    'México',
-    '🇲🇽',
-    'Liga MX',
-    'Nike',
-    'M',
-    2008,
-    1000,
-    'Naranja',
-    'Jerseys/Norte america/Liga MX/Monterrey/Monterrey1.png',
-    null,
-    'Jersey visitante de Rayados de Monterrey temporada 2008, edición histórica en color naranja con patrocinio Bimbo. Club emblemático del norte de México y uno de los más ganadores de la Liga MX.',
-    true,
-    1
-  ),
-  (
-    'Real Madrid 2023-24 - Rodrygo #11',
+    'Real Madrid 2022-23 - Alaba #4',
     'Real Madrid CF',
     'España',
     '🇪🇸',
     'La Liga',
     'Adidas',
-    'L',
-    2023,
+    'M',
+    2022,
     1600,
     'Blanco',
-    'Jerseys/Europa/La liga/Real madrid/RM1.png',
-    'Jerseys/Europa/La liga/Real madrid/RM2.png',
-    'Jersey oficial local del Real Madrid temporada 2023-24, en el clásico blanco merengue con detalles dorados, personalizada con el nombre y número de Rodrygo #11. Club más ganador de la historia de la Champions League.',
+    'Jerseys/Europa/La liga/Real madrid/RM3.png',
+    'Jerseys/Europa/La liga/Real madrid/RM4.png',
+    'Jersey oficial local del Real Madrid temporada 2022-23, en blanco con detalles morados y parches de Champions League, personalizada con el nombre y número de Alaba #4.',
     true,
     1
   );

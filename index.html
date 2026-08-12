@@ -1996,10 +1996,28 @@ function initHeroCarousel() {
   if (heroCarouselTimer) clearInterval(heroCarouselTimer);
   var ultimoPar = [-1, -1];
 
+  /* slides viene ordenado por id ascendente → los últimos agregados quedan al final.
+     Les damos más peso para que salgan más seguido, sin perder frecuencia normal en el resto. */
+  var RECIENTES_CANT = Math.min(5, slides.length);
+  var RECIENTE_PESO = 4;
+  var pesos = slides.map(function(p, idx) {
+    return idx >= slides.length - RECIENTES_CANT ? RECIENTE_PESO : 1;
+  });
+  var pesoTotal = pesos.reduce(function(a, b) { return a + b; }, 0);
+
+  function pickIndexPonderado() {
+    var r = Math.random() * pesoTotal;
+    for (var k = 0; k < pesos.length; k++) {
+      r -= pesos[k];
+      if (r <= 0) return k;
+    }
+    return pesos.length - 1;
+  }
+
   function pickTwoRandom() {
-    var i = Math.floor(Math.random() * slides.length);
+    var i = pickIndexPonderado();
     var j;
-    do { j = Math.floor(Math.random() * slides.length); } while (j === i);
+    do { j = pickIndexPonderado(); } while (j === i);
     /* evitar repetir exactamente el mismo par seguido (solo si hay de sobra para variar) */
     if (slides.length > 2 &&
         ((i === ultimoPar[0] && j === ultimoPar[1]) || (i === ultimoPar[1] && j === ultimoPar[0]))) {

@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VJM — Remake (borrador local, no publicado)</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  :root{
+    --bg:#050505;
+    --bg-light:#f4f2ee;
+    --gold:#C9A84C;
+    --gold-dim:#8a723a;
+    --white:#ffffff;
+    --ink:#0a0a0a;
+    --gray:#8f8f8f;
+    --line:#232323;
+    --line-light:#dedad2;
+  }
+  html{scroll-behavior:smooth;}
+  body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif;overflow-x:hidden;}
+  img{display:block;max-width:100%;}
+  .uc{font-family:'Bebas Neue',cursive;text-transform:uppercase;letter-spacing:.06em;}
+
+  /* barra de aviso: esto es un borrador local */
+  .draft-flag{
+    position:fixed;bottom:16px;left:16px;z-index:999;
+    background:var(--gold);color:#000;font-family:'Inter',sans-serif;
+    font-weight:700;font-size:.72rem;letter-spacing:.04em;text-transform:uppercase;
+    padding:.55rem .9rem;box-shadow:0 6px 24px rgba(0,0,0,.5);
+  }
+
+  /* ── NAV ─────────────────────────────────────────────── */
+  header{
+    position:fixed;top:0;left:0;right:0;z-index:100;
+    height:76px;display:flex;align-items:center;justify-content:space-between;
+    padding:0 3rem;background:rgba(5,5,5,.82);backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  .logo{display:flex;align-items:center;gap:.8rem;font-size:1.4rem;color:var(--white);}
+  .logo img{height:42px;width:auto;}
+  .logo b{color:var(--gold);}
+  nav ul{display:flex;gap:2.4rem;list-style:none;}
+  nav a{color:var(--white);text-decoration:none;font-size:.78rem;font-weight:600;
+    letter-spacing:.14em;text-transform:uppercase;transition:color .2s;}
+  nav a:hover{color:var(--gold);}
+
+  /* ── HERO: negro sólido + resplandores, fiel al sitio real ── */
+  .hero{
+    position:relative;min-height:100vh;display:flex;align-items:flex-end;
+    overflow:hidden;background:var(--bg);
+  }
+  .hero::before{
+    content:"";position:absolute;top:-180px;right:-120px;z-index:0;
+    width:750px;height:750px;border-radius:50%;
+    background:radial-gradient(circle, rgba(201,168,76,.16) 0%, transparent 65%);
+    pointer-events:none;
+  }
+  .hero::after{
+    content:"";position:absolute;bottom:-120px;left:-100px;z-index:0;
+    width:550px;height:550px;border-radius:50%;
+    background:radial-gradient(circle, rgba(201,168,76,.08) 0%, transparent 65%);
+    pointer-events:none;
+  }
+  .hero-stripes{
+    position:absolute;inset:0;z-index:0;pointer-events:none;
+    background-image:repeating-linear-gradient(45deg, transparent, transparent 40px, rgba(255,255,255,.018) 40px, rgba(255,255,255,.018) 80px);
+  }
+  .hero-watermark{
+    position:absolute;bottom:-3vw;right:-1vw;z-index:0;
+    font-family:'Bebas Neue',cursive;font-size:22vw;color:rgba(255,255,255,.035);
+    letter-spacing:.02em;line-height:1;pointer-events:none;user-select:none;
+  }
+  .hero-inner{position:relative;z-index:2;width:100%;padding:0 3rem 6rem;max-width:1440px;margin:0 auto;}
+  .hero-eyebrow{
+    color:var(--gold);font-size:.78rem;font-weight:700;letter-spacing:.22em;
+    text-transform:uppercase;margin-bottom:1.2rem;
+  }
+  .hero h1{font-size:clamp(3rem,9vw,7.5rem);line-height:.9;color:var(--white);max-width:16ch;}
+  .hero h1 span{color:var(--gold);}
+  .hero-sub{margin-top:1.6rem;max-width:44ch;color:#cfcfcf;font-size:1.05rem;line-height:1.6;}
+  .hero-cta{
+    display:inline-flex;align-items:center;gap:.7rem;margin-top:2.4rem;
+    background:var(--gold);color:#000;text-decoration:none;
+    padding:1rem 1.8rem;font-weight:700;font-size:.82rem;letter-spacing:.12em;
+    text-transform:uppercase;transition:background .2s;
+  }
+  .hero-cta:hover{background:#e0bd5c;}
+  .hero-cta:after{content:"→";font-size:1rem;}
+
+  /* Hero sin fotos: tipografía + movimiento real (marquesina) + datos */
+  .hero{flex-direction:column;align-items:center;justify-content:space-between;padding-top:76px;}
+  .hero-inner{text-align:center;display:flex;flex-direction:column;align-items:center;padding-bottom:0;margin:auto 0;}
+  .hero h1{max-width:none;}
+  .hero-sub{margin-left:auto;margin-right:auto;text-align:center;}
+
+  .hero-stats{
+    position:relative;z-index:2;display:flex;gap:3.5rem;margin-top:3rem;
+    padding-top:2rem;border-top:1px solid var(--line);
+  }
+  .hero-stats div{text-align:center;}
+  .hero-stats b{display:block;font-family:'Bebas Neue',cursive;font-size:2.4rem;color:var(--gold);letter-spacing:.02em;}
+  .hero-stats span{font-size:.68rem;color:var(--gray);letter-spacing:.1em;text-transform:uppercase;}
+
+  .marquee{
+    position:relative;z-index:2;width:100%;overflow:hidden;
+    border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+    padding:1.1rem 0;background:rgba(255,255,255,.015);
+  }
+  .marquee-track{display:flex;width:max-content;animation:marquee 32s linear infinite;}
+  .marquee-track span{
+    display:inline-flex;align-items:center;
+    font-family:'Bebas Neue',cursive;font-size:1.3rem;letter-spacing:.04em;
+    color:var(--gray);padding:0 2rem;white-space:nowrap;
+  }
+  .marquee-track span::after{content:"✦";color:var(--gold);margin-left:2rem;font-size:.8rem;}
+  @keyframes marquee{ 0%{transform:translateX(0);} 100%{transform:translateX(-50%);} }
+
+  /* ── SECCIÓN OSCURA: catálogo ───────────────────────────── */
+  section{padding:7rem 3rem;max-width:1440px;margin:0 auto;}
+  .sec-head{
+    display:flex;justify-content:space-between;align-items:flex-end;
+    margin-bottom:3rem;border-bottom:1px solid var(--line);padding-bottom:1.6rem;gap:2rem;flex-wrap:wrap;
+  }
+  .sec-head h2{font-size:clamp(2rem,4vw,3.2rem);}
+  .sec-head p{color:var(--gray);font-size:.85rem;max-width:34ch;text-align:right;}
+
+  .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);}
+  .card{
+    background:#0d0d0d;position:relative;overflow:hidden;cursor:pointer;
+    transition:transform .35s ease;
+  }
+  .card-img{aspect-ratio:3/4;overflow:hidden;background:#000;}
+  .card-img img{width:100%;height:100%;object-fit:contain;transition:transform .5s ease;}
+  .card:hover .card-img img{transform:scale(1.08);}
+  .card-body{padding:1.1rem 1.2rem 1.4rem;border-top:1px solid var(--line);}
+  .card-cat{font-size:.66rem;color:var(--gold);letter-spacing:.14em;text-transform:uppercase;font-weight:700;margin-bottom:.3rem;}
+  .card-name{font-size:1.15rem;letter-spacing:.03em;}
+  .card-price{margin-top:.5rem;font-size:.85rem;color:var(--gray);font-weight:600;}
+
+  /* ── SECCIÓN CLARA: editorial ───────────────────────────── */
+  .light{background:var(--bg-light);color:var(--ink);}
+  .light .sec-head{border-color:var(--line-light);}
+  .light .sec-head p{color:#6b6b6b;}
+  .cols{display:grid;grid-template-columns:repeat(3,1fr);gap:3rem;}
+  .col .num{font-family:'Bebas Neue',cursive;font-size:3rem;color:var(--gold-dim);}
+  .col h3{font-size:1.3rem;margin:.6rem 0 .8rem;letter-spacing:.02em;}
+  .col p{color:#555;font-size:.92rem;line-height:1.6;}
+
+  /* ── BANDA DE MARCA: una sola línea, un solo acento ─────── */
+  .band{
+    background:#000;padding:5.5rem 3rem;text-align:center;
+    border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+  }
+  .band span{color:var(--gold);}
+  .band h2{font-size:clamp(2.2rem,6vw,4.5rem);letter-spacing:.02em;}
+
+  footer{padding:3rem;text-align:center;color:var(--gray);font-size:.78rem;letter-spacing:.05em;}
+
+  @media (max-width:1100px){ .grid{grid-template-columns:repeat(2,1fr);} .cols{grid-template-columns:1fr;} }
+  @media (max-width:640px){
+    header{padding:0 1.2rem;} nav{display:none;}
+    section{padding:4.5rem 1.2rem;}
+    .hero-inner{padding:0 1.2rem 4rem;}
+    .sec-head{flex-direction:column;align-items:flex-start;}
+    .sec-head p{text-align:left;}
+  }
+</style>
+</head>
+<body>
+
+<div class="draft-flag">Borrador local — no publicado</div>
+
+<header>
+  <div class="logo uc"><img src="LOGO/Logo.png" alt="VJM" onerror="this.style.display='none'"> VJM <b>JERSEYS</b></div>
+  <nav><ul>
+    <li><a href="#catalogo">Catálogo</a></li>
+    <li><a href="#nosotros">Nosotros</a></li>
+    <li><a href="#contacto">Contacto</a></li>
+  </ul></nav>
+</header>
+
+<section class="hero">
+  <div class="hero-stripes"></div>
+  <div class="hero-watermark uc">VJM</div>
+  <div class="hero-inner">
+    <div class="hero-eyebrow">Colección original · Piezas de coleccionista</div>
+    <h1 class="uc">Cada jersey<br>tiene <span>una historia</span></h1>
+    <p class="hero-sub">Jerseys originales de clubes y selecciones, de época y actuales. Autenticidad verificada, historia real detrás de cada pieza.</p>
+    <a href="#catalogo" class="hero-cta uc">Ver catálogo</a>
+
+    <div class="hero-stats">
+      <div><b>40+</b><span>Jerseys originales</span></div>
+      <div><b>15+</b><span>Clubes y selecciones</span></div>
+      <div><b>100%</b><span>Piezas verificadas</span></div>
+    </div>
+  </div>
+
+  <div class="marquee">
+    <div class="marquee-track">
+      <span>Real Madrid</span><span>Juventus</span><span>Liverpool</span><span>Chelsea</span>
+      <span>Arsenal</span><span>Newcastle United</span><span>Aston Villa</span><span>Everton</span>
+      <span>Valencia</span><span>Grecia</span><span>Dinamarca</span><span>España</span>
+      <span>Real Madrid</span><span>Juventus</span><span>Liverpool</span><span>Chelsea</span>
+      <span>Arsenal</span><span>Newcastle United</span><span>Aston Villa</span><span>Everton</span>
+      <span>Valencia</span><span>Grecia</span><span>Dinamarca</span><span>España</span>
+    </div>
+  </div>
+</section>
+
+<section id="catalogo">
+  <div class="sec-head">
+    <h2 class="uc">Catálogo<br>destacado</h2>
+    <p>Una selección de piezas recientes — cada una con su propia historia de club, jugador y temporada.</p>
+  </div>
+  <div class="grid">
+
+    <div class="card">
+      <div class="card-img"><img src="Jerseys/Europa/Serie A/Juventus/JV3.png" alt="Juventus"></div>
+      <div class="card-body">
+        <div class="card-cat uc">Serie A · Local</div>
+        <div class="card-name uc">Juventus 2025-26</div>
+        <div class="card-price">$1,500 MXN</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-img"><img src="Jerseys/Europa/Premier League/NCU/NC3.png" alt="Newcastle"></div>
+      <div class="card-body">
+        <div class="card-cat uc">Premier League · Local</div>
+        <div class="card-name uc">Newcastle United 2000-01</div>
+        <div class="card-price">$2,700 MXN</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-img"><img src="Jerseys/Europa/Premier League/Liverpool/Liverpool2.png" alt="Liverpool"></div>
+      <div class="card-body">
+        <div class="card-cat uc">Premier League · Visita</div>
+        <div class="card-name uc">Liverpool 2011-12 — Suárez #7</div>
+        <div class="card-price">$1,100 MXN</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-img"><img src="Jerseys/Europa/Premier League/Arsenal/Arsenal.png" alt="Arsenal"></div>
+      <div class="card-body">
+        <div class="card-cat uc">Premier League · Visita</div>
+        <div class="card-name uc">Arsenal 2016-17</div>
+        <div class="card-price">$1,000 MXN</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-img"><img src="Jerseys/Europa/Premier League/Aston Villa/AV1.png" alt="Aston Villa"></div>
+      <div class="card-body">
+        <div class="card-cat uc">Premier League · Visita</div>
+        <div class="card-name uc">Aston Villa 2001-02 — Ginola #14</div>
+        <div class="card-price">$1,800 MXN</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-img"><img src="Jerseys/Internacional/Grecia/Grecia1.png" alt="Grecia"></div>
+      <div class="card-body">
+        <div class="card-cat uc">Selección · Local</div>
+        <div class="card-name uc">Grecia 2006 — Charisteas #9</div>
+        <div class="card-price">$1,500 MXN</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-img"><img src="Jerseys/Europa/La liga/Valencia/Valencia.png" alt="Valencia"></div>
+      <div class="card-body">
+        <div class="card-cat uc">La Liga · Local</div>
+        <div class="card-name uc">Valencia 2003-04</div>
+        <div class="card-price">$1,500 MXN</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-img"><img src="Jerseys/Europa/Premier League/Chelsea/CH1.png" alt="Chelsea"></div>
+      <div class="card-body">
+        <div class="card-cat uc">Premier League · Local</div>
+        <div class="card-name uc">Chelsea 2023-24</div>
+        <div class="card-price">$1,100 MXN</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section class="light" id="nosotros">
+  <div class="sec-head">
+    <h2 class="uc">Por qué<br>VJM</h2>
+    <p>Tres cosas que no negociamos en cada pieza que vendemos.</p>
+  </div>
+  <div class="cols">
+    <div class="col">
+      <div class="num">01</div>
+      <h3 class="uc">Autenticidad</h3>
+      <p>Cada jersey se revisa antes de publicarse — sin réplicas, sin piezas sin verificar.</p>
+    </div>
+    <div class="col">
+      <div class="num">02</div>
+      <h3 class="uc">Historia real</h3>
+      <p>Temporada, jugador, patrocinador — cada pieza trae su ficha completa, no solo una foto.</p>
+    </div>
+    <div class="col">
+      <div class="num">03</div>
+      <h3 class="uc">Piezas únicas</h3>
+      <p>La mayoría son ejemplares únicos. Lo que ves es literalmente lo único que hay.</p>
+    </div>
+  </div>
+</section>
+
+<div class="band">
+  <h2 class="uc">Una historia. <span>Un jersey.</span></h2>
+</div>
+
+<footer id="contacto" class="uc">VJM Jerseys — Borrador de diseño, no es la tienda en vivo</footer>
+
+</body>
+</html>

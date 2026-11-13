@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>VJM - Venta de Jerseys México</title>
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://browser.sentry-cdn.com/7.99.0/bundle.min.js" crossorigin="anonymous"></script>
   <style>
@@ -35,262 +35,6 @@
     ::-webkit-scrollbar-track { background: #111; }
     ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
     ::-webkit-scrollbar-thumb:hover { background: var(--green); }
-
-    /* ── HEADER ─────────────────────────────────────────── */
-    header {
-      position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
-      height: 70px;
-      background: rgba(10,10,10,.88);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-      border-bottom: 1px solid rgba(7,143,71,.25);
-      display: flex; align-items: center;
-      justify-content: space-between;
-      padding: 0 2rem;
-    }
-
-    .header-logo {
-      display: flex; align-items: center; gap: 12px;
-      text-decoration: none;
-    }
-    .header-logo img { height: 50px; width: auto; }
-    .header-logo span {
-      font-family: 'Bebas Neue', cursive;
-      font-size: 1.8rem; color: var(--gold); letter-spacing: 2px;
-    }
-
-    nav.desktop { display: flex; gap: 2rem; }
-    nav.desktop a {
-      color: var(--white); text-decoration: none;
-      font-size: .88rem; font-weight: 500;
-      letter-spacing: 1px; text-transform: uppercase;
-      transition: color .25s;
-    }
-    nav.desktop a:hover { color: var(--green); }
-
-    .header-right { display: flex; align-items: center; gap: .8rem; }
-
-    .menu-toggle {
-      display: none; background: none; border: none;
-      color: var(--white); font-size: 1.4rem; cursor: pointer; padding: 4px;
-    }
-
-    .cart-btn {
-      position: relative; background: none; border: none;
-      color: var(--white); font-size: 1.5rem; cursor: pointer; padding: 8px;
-      transition: color .25s;
-    }
-    .cart-btn:hover { color: var(--green); }
-
-    .cart-count {
-      position: absolute; top: 0; right: 0;
-      background: var(--red); color: #fff;
-      font-size: .65rem; font-weight: 700;
-      width: 18px; height: 18px; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-family: 'Inter', sans-serif;
-    }
-    .cart-count.hidden { display: none; }
-
-    /* ── MOBILE NAV ──────────────────────────────────────── */
-    .mobile-nav {
-      display: none; position: fixed;
-      top: 70px; left: 0; right: 0; z-index: 990;
-      background: rgba(10,10,10,.98);
-      border-bottom: 1px solid #222;
-      padding: 1.5rem; flex-direction: column; gap: .9rem;
-    }
-    .mobile-nav.open { display: flex; }
-    .mobile-nav a {
-      color: var(--white); text-decoration: none;
-      font-size: 1rem; font-weight: 500; text-transform: uppercase;
-      letter-spacing: 1px; padding-bottom: .8rem;
-      border-bottom: 1px solid #222; transition: color .25s;
-    }
-    .mobile-nav a:last-child { border-bottom: none; }
-    .mobile-nav a:hover { color: var(--green); }
-
-    /* ── HERO ────────────────────────────────────────────── */
-    .hero {
-      min-height: 100vh;
-      background: var(--bg);
-      display: flex; align-items: center;
-      padding: 90px 2rem 4rem;
-      position: relative; overflow: hidden;
-    }
-
-    /* glows atmosféricos */
-    .hero::before {
-      content: '';
-      position: absolute; top: -180px; right: -120px;
-      width: 750px; height: 750px; border-radius: 50%;
-      background: radial-gradient(circle, rgba(7,143,71,.2) 0%, transparent 65%);
-      pointer-events: none;
-    }
-    .hero::after {
-      content: '';
-      position: absolute; bottom: -120px; left: -100px;
-      width: 550px; height: 550px; border-radius: 50%;
-      background: radial-gradient(circle, rgba(175,1,0,.1) 0%, transparent 65%);
-      pointer-events: none;
-    }
-
-    /* rayas diagonales */
-    .hero-stripes {
-      position: absolute; inset: 0; pointer-events: none;
-      background-image: repeating-linear-gradient(
-        45deg, transparent, transparent 40px,
-        rgba(255,255,255,.018) 40px, rgba(255,255,255,.018) 80px
-      );
-    }
-
-    /* marca de agua VJM al fondo */
-    .hero-watermark {
-      position: absolute; bottom: -40px; right: -20px;
-      font-family: 'Bebas Neue', cursive;
-      font-size: 30vw; line-height: 1; letter-spacing: -8px;
-      color: rgba(255,255,255,.022);
-      pointer-events: none; user-select: none;
-    }
-
-    /* layout 2 columnas */
-    .hero-inner {
-      position: relative; z-index: 1;
-      max-width: 1300px; margin: 0 auto; width: 100%;
-      display: grid; grid-template-columns: 1fr 1fr;
-      align-items: center; gap: 3rem;
-    }
-
-    /* columna izquierda */
-    .hero-left { display: flex; flex-direction: column; }
-
-    .hero-logo-img {
-      height: 160px;
-      width: auto;
-      max-width: 320px;
-      align-self: flex-start;
-      margin-bottom: 2rem;
-      filter: drop-shadow(0 0 35px rgba(7,143,71,.45));
-    }
-
-    .hero-headline {
-      font-family: 'Bebas Neue', cursive;
-      font-size: clamp(2.6rem, 4.5vw, 4.8rem);
-      letter-spacing: 3px; line-height: 1;
-      margin-bottom: 1.8rem;
-    }
-    .hero-headline em   { color: var(--gold);  font-style: normal; }
-    .hero-headline span { color: var(--green); }
-
-    .hero-sub {
-      font-size: .95rem; color: var(--gray); line-height: 1.75;
-      margin-bottom: 2rem; max-width: 440px;
-    }
-
-    /* estadísticas */
-    .hero-stats {
-      display: flex; gap: 2.5rem; margin-bottom: 2.5rem;
-      border-top: 1px solid #1e1e1e; padding-top: 1.5rem;
-    }
-    .hero-stat .snum {
-      font-family: 'Bebas Neue', cursive;
-      font-size: 2rem; color: var(--green); display: block;
-      line-height: 1;
-    }
-    .hero-stat .slbl {
-      font-size: .72rem; color: var(--gray);
-      text-transform: uppercase; letter-spacing: 1px;
-    }
-
-    .hero-btns { display: flex; gap: 1rem; flex-wrap: wrap; }
-
-    /* columna derecha: showcas e jerseys */
-    .hero-right {
-      position: relative; height: 540px;
-    }
-
-    /* círculo decorativo */
-    .hero-circle {
-      position: absolute; top: 50%; left: 50%;
-      transform: translate(-50%, -50%);
-      width: 360px; height: 360px; border-radius: 50%;
-      border: 1px solid rgba(7,143,71,.14);
-      box-shadow: 0 0 0 55px rgba(7,143,71,.04),
-                  0 0 0 110px rgba(7,143,71,.02);
-    }
-
-    /* tarjeta jersey genérica */
-    .hj-card {
-      position: absolute;
-      background: #111; border: 1px solid #222;
-      border-radius: 14px; overflow: hidden;
-      box-shadow: 0 24px 70px rgba(0,0,0,.7);
-      transition: opacity .45s ease;
-    }
-    .hj-card.hj-fade { opacity: 0; }
-    .hj-card img {
-      width: 100%; height: 280px;
-      object-fit: contain; object-position: center;
-      background: #1a1a1a; display: block;
-    }
-    .hj-card-body { padding: .75rem 1rem; background: #111; }
-    .hj-card-name {
-      font-family: 'Bebas Neue', cursive; font-size: .92rem; letter-spacing: 1px;
-      color: var(--white); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    }
-    .hj-card-price { font-size: .9rem; font-weight: 700; color: var(--green); margin-top: 2px; }
-
-    .hj-badge {
-      position: absolute; top: 10px; left: 10px;
-      padding: 4px 10px; border-radius: 4px;
-      font-family: 'Bebas Neue', cursive; font-size: .78rem; letter-spacing: 1px;
-    }
-    .hj-badge-new  { background: var(--green); color: #fff; }
-    .hj-badge-club { background: rgba(0,0,0,.78); backdrop-filter: blur(4px); color: #fff; }
-
-    /* tarjeta principal (SD) */
-    .hj-main {
-      width: 230px; top: 20px; right: 20px;
-      transform: rotate(4deg);
-      animation: floatMain 6s ease-in-out infinite;
-      z-index: 3;
-    }
-    /* halo verde debajo de la tarjeta principal */
-    .hj-main::after {
-      content: ''; position: absolute; bottom: -18px; left: 50%;
-      transform: translateX(-50%);
-      width: 75%; height: 22px;
-      background: rgba(7,143,71,.35); filter: blur(14px); border-radius: 50%;
-    }
-
-    /* tarjeta secundaria (IND) */
-    .hj-secondary {
-      width: 200px; bottom: 20px; left: 20px;
-      transform: rotate(-6deg);
-      animation: floatSec 7s ease-in-out infinite;
-      z-index: 2;
-    }
-
-    @keyframes floatMain {
-      0%, 100% { transform: rotate(4deg)  translateY(0);    }
-      50%       { transform: rotate(4deg)  translateY(-16px); }
-    }
-    @keyframes floatSec {
-      0%, 100% { transform: rotate(-6deg) translateY(-10px); }
-      50%       { transform: rotate(-6deg) translateY(6px);   }
-    }
-
-    /* responsive hero */
-    @media (max-width: 820px) {
-      .hero-inner { grid-template-columns: 1fr; gap: 2.5rem; }
-      .hero-right  { height: 320px; order: -1; }
-      .hero-circle { width: 260px; height: 260px; }
-      .hj-main      { width: 155px; top: 10px; right: 10px; }
-      .hj-secondary { width: 135px; bottom: 10px; left: 10px; }
-      .hero-logo-img  { height: 110px; align-self: center; }
-      .hero-headline  { font-size: clamp(2rem, 6.5vw, 3rem); }
-      .hero-watermark { font-size: 45vw; }
-    }
 
     /* ── PARCHES MUNDIAL BANNER ────────────────────────────── */
     .parches-carousel {
@@ -368,272 +112,6 @@
       background: transparent; color: var(--red); border-color: var(--red);
     }
     .btn-outline-red:hover { background: var(--red); color: #fff; }
-
-    /* ── SECTION TITLE ───────────────────────────────────── */
-    .section-title {
-      font-family: 'Bebas Neue', cursive;
-      font-size: 2.5rem; letter-spacing: 3px;
-      color: var(--white); margin-bottom: 2rem;
-      display: inline-block; position: relative;
-    }
-    .section-title::after {
-      content: '';
-      position: absolute; bottom: -8px; left: 0;
-      width: 60px; height: 3px; background: var(--green);
-    }
-
-    /* ── FILTERS ─────────────────────────────────────────── */
-    .filters-wrap {
-      padding: 3rem 2rem 1.5rem;
-      max-width: 1400px; margin: 0 auto;
-    }
-    .filters-row {
-      display: flex; flex-wrap: wrap; gap: 1rem; align-items: center;
-    }
-    .f-input, .f-select {
-      background: var(--card-bg);
-      border: 1px solid var(--card-bdr);
-      color: var(--white);
-      padding: 10px 16px;
-      border-radius: 6px;
-      font-family: 'Inter', sans-serif;
-      font-size: .9rem; outline: none;
-      transition: border-color .25s;
-    }
-    .f-input:focus, .f-select:focus { border-color: var(--green); }
-    .f-input { flex: 1; min-width: 200px; }
-    .f-select { cursor: pointer; min-width: 180px; }
-    .f-select option { background: #222; }
-
-    /* ── CATALOG ─────────────────────────────────────────── */
-    #catalogo {
-      padding: 1rem 2rem 5rem;
-      max-width: 1400px; margin: 0 auto;
-    }
-
-    .products-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
-      gap: 1.6rem;
-    }
-
-    .no-results {
-      grid-column: 1/-1; text-align: center;
-      padding: 4rem; color: var(--gray); font-size: 1.1rem;
-    }
-
-    /* ── PRODUCT CARD ────────────────────────────────────── */
-    .product-card {
-      background: var(--card-bg);
-      border: 1px solid var(--card-bdr);
-      border-radius: 12px; overflow: hidden;
-      transition: transform .35s cubic-bezier(.2,.9,.3,1.3), box-shadow .35s, opacity .35s, filter .35s;
-      opacity: 0; transform: translateY(20px) scale(1);
-      display: flex; flex-direction: column;
-      position: relative;
-    }
-    .product-card.visible {
-      opacity: 1; transform: translateY(0) scale(1);
-    }
-    .product-card:hover {
-      transform: translateY(-10px) scale(1.09);
-      box-shadow: 0 26px 60px rgba(7,143,71,.45);
-      z-index: 2;
-    }
-    /* al pasar el mouse por una card, las demás se achican y opacan para resaltarla más (estilo galería) */
-    .products-grid:has(.product-card:hover) .product-card.visible:not(:hover) {
-      transform: translateY(0) scale(.93);
-      opacity: .5;
-      filter: brightness(.65) saturate(.8);
-    }
-
-    .card-img-wrap {
-      position: relative; background: #1a1a1a;
-      aspect-ratio: 4/3; overflow: hidden;
-    }
-    .card-img-wrap img {
-      width: 100%; height: 100%; object-fit: cover;
-      transition: transform .4s;
-    }
-    .product-card:hover .card-img-wrap img { transform: scale(1.06); }
-
-    .card-placeholder {
-      width: 100%; height: 100%;
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      gap: .4rem;
-    }
-    .card-placeholder .ph-flag { font-size: 3.8rem; }
-    .card-placeholder .ph-label {
-      font-family: 'Bebas Neue', cursive;
-      font-size: .8rem; letter-spacing: 2px;
-      opacity: .55;
-    }
-
-    .badge-country {
-      position: absolute; top: 10px; left: 10px;
-      background: rgba(0,0,0,.75); backdrop-filter: blur(4px);
-      border-radius: 20px; padding: 4px 10px;
-      font-size: .75rem; color: #fff;
-      display: flex; align-items: center; gap: 4px;
-    }
-
-    .card-body { padding: 1.2rem; display: flex; flex-direction: column; flex: 1; }
-
-    .badge-liga {
-      display: inline-block;
-      background: rgba(7,143,71,.15);
-      border: 1px solid rgba(7,143,71,.3);
-      color: var(--green);
-      font-size: .7rem; padding: 3px 8px;
-      border-radius: 4px; margin-bottom: .7rem;
-      text-transform: uppercase; letter-spacing: .5px;
-    }
-
-    .card-name {
-      font-family: 'Bebas Neue', cursive;
-      font-size: 1.3rem; letter-spacing: 1.5px;
-      color: var(--white); margin-bottom: .3rem; line-height: 1.2;
-    }
-    .card-club { font-size: .8rem; color: var(--gray); margin-bottom: .7rem; }
-
-    .card-meta {
-      display: flex; align-items: center;
-      justify-content: space-between; margin-bottom: 1rem;
-    }
-    .card-marca { font-size: .8rem; color: var(--gold); font-weight: 600; }
-    .badge-talla {
-      background: var(--green); color: #fff;
-      font-size: .75rem; font-weight: 700;
-      padding: 3px 10px; border-radius: 4px;
-    }
-
-    .card-price {
-      font-size: 1.6rem; font-weight: 700;
-      color: var(--green); margin-bottom: 1rem;
-    }
-    .card-price small { font-size: .85rem; color: var(--gray); font-weight: 400; }
-
-    .card-actions { display: flex; flex-direction: column; gap: .5rem; margin-top: auto; padding-top: .8rem; }
-
-    .btn-details, .btn-add-card {
-      width: 100%; padding: 10px;
-      border-radius: 6px;
-      font-family: 'Bebas Neue', cursive;
-      font-size: 1rem; letter-spacing: 1.5px;
-      cursor: pointer; border: 2px solid; transition: all .3s;
-    }
-    .btn-details {
-      background: var(--green); color: #fff; border-color: var(--green);
-    }
-    .btn-details:hover {
-      background: #05a352;
-      box-shadow: 0 4px 16px rgba(7,143,71,.4);
-    }
-    .btn-add-card {
-      background: transparent; color: var(--red); border-color: var(--red);
-    }
-    .btn-add-card:hover { background: var(--red); color: #fff; }
-
-    /* ── MODAL ───────────────────────────────────────────── */
-    .modal-overlay {
-      position: fixed; inset: 0; z-index: 2000;
-      background: rgba(0,0,0,.88);
-      display: flex; align-items: center; justify-content: center;
-      padding: 1rem;
-      opacity: 0; pointer-events: none;
-      transition: opacity .3s;
-    }
-    .modal-overlay.open { opacity: 1; pointer-events: all; }
-
-    .modal-box {
-      background: #111; border: 1px solid #222;
-      border-radius: 16px;
-      max-width: 900px; width: 100%;
-      max-height: 92vh; overflow-y: auto;
-      position: relative;
-      display: grid; grid-template-columns: 1fr 1fr;
-      transform: scale(.92); transition: transform .3s;
-    }
-    .modal-overlay.open .modal-box { transform: scale(1); }
-
-    .modal-close {
-      position: absolute; top: 12px; right: 12px; z-index: 5;
-      width: 36px; height: 36px; border-radius: 50%;
-      background: rgba(255,255,255,.12); border: none;
-      color: #fff; font-size: 1.1rem; cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      transition: background .25s;
-    }
-    .modal-close:hover { background: var(--red); }
-
-    .modal-imgs {
-      background: #1a1a1a; border-radius: 16px 0 0 16px;
-      padding: 2rem;
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center; gap: 1rem;
-    }
-    .modal-main-img {
-      width: 100%; max-height: 300px;
-      object-fit: contain; border-radius: 8px;
-    }
-    .modal-ph-lg {
-      width: 100%; height: 280px; border-radius: 8px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 5rem;
-    }
-    .modal-thumbs { display: flex; gap: .5rem; }
-    .modal-thumb {
-      width: 68px; height: 68px; object-fit: cover;
-      border-radius: 6px; cursor: pointer;
-      border: 2px solid transparent; transition: border-color .2s;
-    }
-    .modal-thumb.active, .modal-thumb:hover { border-color: var(--green); }
-
-    .modal-info {
-      padding: 2rem; overflow-y: auto;
-      display: flex; flex-direction: column; gap: .8rem;
-    }
-    .modal-name {
-      font-family: 'Bebas Neue', cursive;
-      font-size: 1.8rem; letter-spacing: 2px; line-height: 1.1;
-    }
-    .modal-row {
-      display: flex; align-items: center; gap: .5rem;
-      font-size: .85rem; color: var(--gray);
-    }
-    .modal-row strong { color: var(--white); }
-    .modal-desc {
-      font-size: .9rem; color: var(--gray); line-height: 1.7;
-      border-top: 1px solid #222; padding-top: .8rem;
-    }
-    .modal-price {
-      font-size: 2.2rem; font-weight: 700; color: var(--green);
-    }
-    .modal-price small { font-size: 1rem; color: var(--gray); font-weight: 400; }
-    .modal-actions { display: flex; flex-direction: column; gap: .6rem; margin-top: auto; }
-
-    .btn-wa {
-      display: flex; align-items: center; justify-content: center; gap: .5rem;
-      background: #25D366; color: #fff; border: none;
-      border-radius: 6px; padding: 12px;
-      font-family: 'Bebas Neue', cursive;
-      font-size: 1rem; letter-spacing: 1.5px;
-      cursor: pointer; text-decoration: none;
-      transition: background .25s, transform .25s;
-    }
-    .btn-wa:hover { background: #128C7E; transform: translateY(-1px); }
-    .btn-wa svg { width: 20px; height: 20px; fill: #fff; flex-shrink: 0; }
-
-    .btn-cart-modal {
-      width: 100%; padding: 12px;
-      background: var(--green); color: #fff; border: none;
-      border-radius: 6px;
-      font-family: 'Bebas Neue', cursive;
-      font-size: 1rem; letter-spacing: 1.5px;
-      cursor: pointer; transition: background .25s;
-    }
-    .btn-cart-modal:hover { background: #05a352; }
 
     /* ── CART SIDEBAR ────────────────────────────────────── */
     .cart-overlay {
@@ -742,70 +220,6 @@
       opacity: 1; transform: translateX(-50%) translateY(0);
     }
 
-    /* ── NOSOTROS ────────────────────────────────────────── */
-    #nosotros {
-      background: #111; padding: 5rem 2rem; text-align: center;
-    }
-    .nosotros-logo { height: 120px; width: auto; margin-bottom: 2rem; }
-    .nosotros-text {
-      max-width: 660px; margin: 0 auto 3rem;
-      color: var(--gray); font-size: 1.05rem; line-height: 1.85;
-    }
-    .nosotros-cards {
-      display: flex; gap: 1.8rem; justify-content: center;
-      flex-wrap: wrap; max-width: 900px; margin: 0 auto;
-    }
-    .nosotros-card {
-      background: #1a1a1a; border: 1px solid #222;
-      border-radius: 12px; padding: 2rem;
-      flex: 1; min-width: 220px; max-width: 260px;
-      transition: transform .3s, box-shadow .3s;
-    }
-    .nosotros-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 8px 30px rgba(7,143,71,.15);
-    }
-    .nosotros-card .nc-icon { font-size: 2.4rem; margin-bottom: .9rem; }
-    .nosotros-card h4 {
-      font-family: 'Bebas Neue', cursive;
-      font-size: 1.15rem; letter-spacing: 1.5px;
-      margin-bottom: .4rem;
-    }
-    .nosotros-card p { font-size: .85rem; color: var(--gray); }
-
-    /* ── FOOTER ──────────────────────────────────────────── */
-    footer {
-      background: #050505;
-      border-top: 3px solid var(--green);
-      padding: 3rem 2rem 1.5rem;
-    }
-    .footer-inner { max-width: 1200px; margin: 0 auto; }
-    .footer-top {
-      display: flex; flex-wrap: wrap;
-      gap: 2rem; justify-content: space-between; align-items: flex-start;
-      margin-bottom: 2rem;
-    }
-    .footer-brand { display: flex; align-items: center; gap: 10px; }
-    .footer-brand img { height: 44px; }
-    .footer-brand span {
-      font-family: 'Bebas Neue', cursive;
-      font-size: 1.4rem; color: var(--gold);
-    }
-    .footer-links { display: flex; flex-direction: column; gap: .5rem; }
-    .footer-links a {
-      color: var(--gray); text-decoration: none;
-      font-size: .9rem; transition: color .25s;
-    }
-    .footer-links a:hover { color: var(--green); }
-    .footer-contact { display: flex; flex-direction: column; gap: .5rem; }
-    .footer-contact p { color: var(--gray); font-size: .9rem; }
-    .footer-contact a { color: var(--green); text-decoration: none; }
-    .footer-contact a.insta { color: var(--gold); }
-    .footer-bottom {
-      border-top: 1px solid #1a1a1a; padding-top: 1.4rem;
-      text-align: center; color: var(--gray); font-size: .8rem;
-    }
-
     /* ── WA FLOAT ────────────────────────────────────────── */
     .wa-float {
       position: fixed; bottom: 28px; right: 28px; z-index: 1200;
@@ -832,23 +246,6 @@
     }
     .wa-float svg { width: 32px; height: 32px; fill: #fff; }
 
-    /* ── RESPONSIVE ──────────────────────────────────────── */
-    @media (max-width: 820px) {
-      nav.desktop { display: none; }
-      .menu-toggle { display: flex; }
-      .modal-box { grid-template-columns: 1fr; }
-      .modal-imgs { border-radius: 16px 16px 0 0; padding: 1.2rem; }
-      .cart-sidebar { width: 100%; right: -100%; }
-      .cart-sidebar.open { right: 0; }
-    }
-    @media (max-width: 540px) {
-      .header-logo span { display: none; }
-      .products-grid { grid-template-columns: 1fr; }
-      .filters-row { flex-direction: column; }
-      .f-input, .f-select { width: 100%; }
-      .footer-top { flex-direction: column; }
-      .nosotros-cards { flex-direction: column; align-items: center; }
-    }
 
     /* ══════════════════════════════════════════════════════
        AUTH SYSTEM
@@ -1000,129 +397,824 @@
     .order-items { font-size: .82rem; color: var(--gray); margin: .4rem 0; line-height: 1.5; }
     .order-total { font-weight: 700; color: var(--green); font-size: .95rem; }
 
+    /* ══════════════════════════════════════════════════════
+       REDISEÑO 2026 · layout general
+    ══════════════════════════════════════════════════════ */
+    :root {
+      --panel:  #141412;
+      --photo:  #181715;
+      --line:   #272622;
+      --muted:  #a39f93;
+      --soft:   #cfccc2;
+      --green-t:#2bb36a;
+      --red-t:  #e5463d;
+      --mono:   'IBM Plex Mono', ui-monospace, Consolas, monospace;
+    }
+    .wrap {
+      max-width: 1280px; margin: 0 auto;
+      padding-left: max(16px, env(safe-area-inset-left, 0px));
+      padding-right: max(16px, env(safe-area-inset-right, 0px));
+    }
+    .eyebrow {
+      font-family: var(--mono); font-size: .72rem; letter-spacing: .14em;
+      text-transform: uppercase; color: var(--muted); margin-bottom: .5rem;
+    }
+    :focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+    /* ── BARRA PROMO ─────────────────────────────────────── */
+    .promo-bar {
+      background: var(--green); color: #fff;
+      font-size: .78rem; font-weight: 600;
+      display: flex; flex-wrap: wrap; justify-content: center;
+      gap: 4px 28px; padding: 8px 16px; text-align: center;
+    }
+    .promo-bar span + span::before { content: '·'; margin-right: 28px; opacity: .6; }
+
+    /* ── HEADER ─────────────────────────────────────────── */
+    header {
+      position: sticky; top: 0; z-index: 1000;
+      background: rgba(10,10,10,.94);
+      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--line);
+    }
+    .hdr-bar {
+      max-width: 1280px; margin: 0 auto;
+      display: grid; grid-template-columns: auto minmax(0,1fr) auto;
+      gap: 24px; align-items: center;
+      padding: 12px max(16px, env(safe-area-inset-right, 0px)) 12px max(16px, env(safe-area-inset-left, 0px));
+    }
+    .header-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .header-logo img { height: 46px; width: auto; }
+    .header-logo span {
+      font-family: 'Bebas Neue', cursive; font-size: 1.7rem;
+      color: var(--gold); letter-spacing: 2px; white-space: nowrap;
+    }
+    .hdr-search {
+      display: flex; align-items: center; gap: 10px;
+      background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
+      padding: 0 14px; max-width: 540px; width: 100%; justify-self: center;
+      color: var(--muted); transition: border-color .2s;
+    }
+    .hdr-search:focus-within { border-color: var(--green); }
+    .hdr-search input {
+      flex: 1; min-width: 0; background: none; border: 0; outline: none;
+      color: var(--white); font: inherit; font-size: .9rem; padding: 11px 0;
+    }
+    .hdr-search input::placeholder { color: #77746b; }
+    .header-right { display: flex; align-items: center; gap: .6rem; }
+    .menu-toggle {
+      display: none; background: none; border: none;
+      color: var(--white); font-size: 1.4rem; cursor: pointer; padding: 4px 6px;
+    }
+    .cart-btn {
+      position: relative; background: none; border: none;
+      color: var(--white); cursor: pointer; padding: 8px;
+      display: flex; transition: color .25s;
+    }
+    .cart-btn:hover { color: var(--green-t); }
+    .cart-count {
+      position: absolute; top: 0; right: -2px;
+      background: var(--red); color: #fff;
+      font-size: .65rem; font-weight: 700;
+      min-width: 18px; height: 18px; border-radius: 9px; padding: 0 4px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .cart-count.hidden { display: none; }
+
+    .cat-nav {
+      max-width: 1280px; margin: 0 auto;
+      display: flex; gap: 26px; overflow-x: auto; scrollbar-width: none;
+      border-top: 1px solid var(--line);
+      padding: 11px max(16px, env(safe-area-inset-right, 0px)) 11px max(16px, env(safe-area-inset-left, 0px));
+    }
+    .cat-nav::-webkit-scrollbar { display: none; }
+    .cat-nav a {
+      white-space: nowrap; text-decoration: none;
+      font-size: .78rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase;
+      color: #d9d6cc; transition: color .2s;
+    }
+    .cat-nav a:hover { color: var(--green-t); }
+    .cat-nav a.cat-on { color: var(--gold); }
+    .cat-nav a.cat-hot { color: var(--red-t); }
+
+    .mobile-nav {
+      display: none; position: absolute; top: 100%; left: 0; right: 0;
+      background: rgba(10,10,10,.98); border-bottom: 1px solid var(--line);
+      padding: 1rem 1.5rem; flex-direction: column; gap: .2rem;
+    }
+    .mobile-nav.open { display: flex; }
+    .mobile-nav a {
+      color: var(--white); text-decoration: none; font-size: .95rem; font-weight: 500;
+      text-transform: uppercase; letter-spacing: 1px; padding: .8rem 0;
+      border-bottom: 1px solid #222;
+    }
+    .mobile-nav a:last-child { border-bottom: none; }
+
+    /* ── BOTONES ─────────────────────────────────────────── */
+    .btn2 {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      border-radius: 7px; padding: 14px 22px; border: 1px solid transparent;
+      font-family: 'Inter', sans-serif; font-weight: 700; font-size: .92rem;
+      text-decoration: none; cursor: pointer; transition: background .2s, border-color .2s, color .2s;
+    }
+    .btn2-primary { background: var(--green); color: #fff; }
+    .btn2-primary:hover { background: #05a352; }
+    .btn2-wa { border-color: var(--green); color: var(--green-t); background: transparent; }
+    .btn2-wa:hover { background: rgba(7,143,71,.15); }
+    .btn2-ghost { border-color: #3a3934; color: var(--white); background: transparent; }
+    .btn2-ghost:hover { border-color: var(--white); }
+    .btn2:disabled { opacity: .5; cursor: not-allowed; }
+
+    .tag2 {
+      display: inline-block; font-family: var(--mono); font-size: .66rem; font-weight: 500;
+      letter-spacing: .08em; text-transform: uppercase;
+      padding: 4px 8px; border-radius: 3px;
+      background: #000; color: var(--white); border: 1px solid #333;
+    }
+    .tag2-new    { background: var(--green); border-color: var(--green); color: #fff; }
+    .tag2-gold   { background: var(--gold);  border-color: var(--gold);  color: #16130a; }
+    .tag2-player { background: var(--red);   border-color: var(--red);   color: #fff; }
+
+    /* ── HERO ────────────────────────────────────────────── */
+    .hero {
+      position: relative; overflow: hidden;
+      background:
+        radial-gradient(ellipse 60% 70% at 85% 30%, rgba(7,143,71,.14), transparent 70%),
+        radial-gradient(ellipse 40% 50% at 0% 100%, rgba(175,1,0,.10), transparent 70%),
+        var(--bg);
+    }
+    .hero-grid {
+      display: grid; grid-template-columns: minmax(0,1.05fr) minmax(0,1fr);
+      gap: 48px; align-items: center; padding-top: 56px; padding-bottom: 56px;
+    }
+    .hero-headline {
+      font-family: 'Bebas Neue', cursive; font-weight: 400;
+      font-size: clamp(3rem, 7vw, 6rem); line-height: .95; letter-spacing: 1px;
+      text-wrap: balance;
+    }
+    .hero-headline span { color: var(--gold); }
+    .hero-sub { color: var(--soft); font-size: 1.05rem; line-height: 1.65; max-width: 46ch; margin: 1.2rem 0 1.8rem; }
+    .hero-btns { display: flex; flex-wrap: wrap; gap: 12px; }
+    .hero-stats {
+      display: flex; flex-wrap: wrap; gap: 36px;
+      margin-top: 2.2rem; padding-top: 1.5rem; border-top: 1px solid var(--line);
+    }
+    .hero-stats div { display: grid; gap: 2px; }
+    .hero-stats strong {
+      font-family: 'Bebas Neue', cursive; font-weight: 400;
+      font-size: 2.2rem; line-height: 1; color: var(--green-t);
+    }
+    .hero-stats span { font-size: .72rem; color: var(--muted); text-transform: uppercase; letter-spacing: .1em; }
+
+    .feature {
+      display: grid; grid-template-columns: minmax(0,1.1fr) minmax(0,1fr);
+      background: var(--panel); border: 1px solid var(--line);
+      border-radius: 12px; overflow: hidden;
+      box-shadow: 0 30px 80px rgba(0,0,0,.5);
+    }
+    .feature[hidden] { display: none; }
+    .feature-ph {
+      position: relative; background: var(--photo); border: 0; padding: 0; cursor: pointer;
+      aspect-ratio: 4/5;
+    }
+    .feature-ph img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .5s; }
+    .feature-ph:hover img { transform: scale(1.04); }
+    .feature-ph .tag2 { position: absolute; top: 14px; left: 14px; }
+    .feature-info { padding: 24px; display: flex; flex-direction: column; gap: 14px; }
+    .feature-dorsal { font-family: 'Bebas Neue', cursive; font-size: 4.4rem; line-height: .8; color: var(--gold); }
+    .feature-dorsal:empty { display: none; }
+    .feature-name {
+      font-family: 'Bebas Neue', cursive; font-weight: 400;
+      font-size: 1.9rem; line-height: 1; letter-spacing: 1px; text-wrap: balance;
+    }
+    .kv { display: grid; grid-template-columns: auto 1fr; gap: 6px 14px; font-size: .84rem; margin: 0; }
+    .kv dt { color: var(--muted); }
+    .kv dd { margin: 0; font-weight: 600; }
+    .feature-price { font-family: 'Bebas Neue', cursive; font-size: 2.3rem; line-height: 1; }
+    .feature-price small, .card-price small, .modal-price small {
+      font-family: 'Inter', sans-serif; font-size: .75rem; color: var(--muted); font-weight: 400; margin-left: 4px;
+    }
+    .feature-info .btn2 { margin-top: auto; }
+
+    .feature-week { font-family: var(--mono); font-size: .7rem; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+
+    /* ── CARRUSEL PRINCIPAL ──────────────────────────────── */
+    .hc { position: relative; overflow: hidden; background: #050505; border-bottom: 1px solid var(--line); }
+    .hc-track { display: grid; }
+    .hc-slide {
+      grid-area: 1 / 1; position: relative; overflow: hidden; cursor: pointer;
+      min-height: clamp(520px, 74vh, 700px);
+      display: flex; align-items: center;
+      opacity: 0; visibility: hidden; transition: opacity .7s ease, visibility 0s linear .7s;
+    }
+    .hc-slide.is-active { opacity: 1; visibility: visible; transition: opacity .7s ease; z-index: 1; }
+    .hc-loading { cursor: default; }
+    .hc-glow {
+      position: absolute; inset: 0; pointer-events: none;
+      background:
+        radial-gradient(ellipse 55% 75% at 72% 50%, color-mix(in srgb, var(--c, #078F47) 38%, transparent), transparent 70%),
+        linear-gradient(90deg, #050505 0%, rgba(5,5,5,.6) 45%, transparent 100%);
+    }
+    .hc-photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 70% 25%; }
+    .hc-credit {
+      position: absolute; right: max(12px, env(safe-area-inset-right, 0px)); bottom: 10px; z-index: 4;
+      font-size: .66rem; color: rgba(255,255,255,.6); text-decoration: none;
+      background: rgba(0,0,0,.35); padding: 2px 6px; border-radius: 3px;
+    }
+    a.hc-credit:hover { color: #fff; }
+    .hc-slide.is-photo .hc-glow {
+      background: linear-gradient(90deg, rgba(5,5,5,.92) 0%, rgba(5,5,5,.55) 45%, rgba(5,5,5,.1) 100%),
+                  linear-gradient(0deg, rgba(5,5,5,.7) 0%, transparent 40%);
+    }
+    .hc-inner {
+      position: relative; width: 100%;
+      display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr);
+      gap: 32px; align-items: center; padding-top: 48px; padding-bottom: 72px;
+    }
+    .hc-slide.is-photo .hc-inner { grid-template-columns: minmax(0, 620px); }
+    .hc-copy { display: flex; flex-direction: column; gap: 14px; align-items: flex-start; }
+    .hc-copy .eyebrow { margin: 0; color: var(--soft); }
+    .hc-title {
+      font-family: 'Bebas Neue', cursive; font-weight: 400;
+      font-size: clamp(3.4rem, 9vw, 8rem); line-height: .86; letter-spacing: 1px; text-wrap: balance;
+    }
+    .hc-title span { color: var(--gold); }
+    .hc-sub { color: var(--soft); font-size: 1rem; max-width: 44ch; }
+    .hc-meta { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    .hc-price { font-family: 'Bebas Neue', cursive; font-size: 2.4rem; line-height: 1; }
+    .hc-price small { font-family: 'Inter', sans-serif; font-size: .75rem; color: var(--muted); margin-left: 4px; }
+    .hc-btns { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 6px; }
+    .hc-media { position: relative; display: grid; place-items: center; min-height: 420px; }
+    .hc-num {
+      position: absolute; font-family: 'Bebas Neue', cursive; line-height: .8;
+      font-size: clamp(14rem, 32vw, 30rem); color: transparent;
+      -webkit-text-stroke: 2px color-mix(in srgb, var(--c, #C9A84C) 55%, #fff 10%);
+      opacity: .35; user-select: none; pointer-events: none;
+    }
+    .hc-jersey {
+      position: relative; width: min(100%, 460px); aspect-ratio: 4/5; object-fit: contain;
+      filter: drop-shadow(0 30px 60px rgba(0,0,0,.7));
+      transform: translateY(14px) scale(.97); transition: transform 1s cubic-bezier(.2,.8,.2,1);
+    }
+    .hc-slide.is-active .hc-jersey { transform: none; }
+    .hc-nav {
+      position: absolute; top: 50%; transform: translateY(-50%); z-index: 3;
+      width: 48px; height: 48px; border-radius: 50%;
+      background: rgba(0,0,0,.45); border: 1px solid rgba(255,255,255,.18); color: #fff;
+      display: grid; place-items: center; cursor: pointer; transition: background .2s;
+    }
+    .hc-nav:hover { background: rgba(0,0,0,.8); }
+    .hc-nav[hidden] { display: none; }
+    .hc-prev { left: max(12px, env(safe-area-inset-left, 0px)); }
+    .hc-next { right: max(12px, env(safe-area-inset-right, 0px)); }
+    .hc-dots { position: absolute; left: 0; right: 0; bottom: 24px; z-index: 3; display: flex; justify-content: center; gap: 8px; }
+    .hc-dot { width: 9px; height: 9px; border-radius: 99px; border: 0; padding: 0; background: rgba(255,255,255,.35); cursor: pointer; transition: width .3s, background .3s; }
+    .hc-dot[aria-current="true"] { width: 30px; background: #fff; }
+    @media (max-width: 860px) {
+      .hc-slide { min-height: 0; align-items: flex-start; }
+      .hc-inner { grid-template-columns: minmax(0,1fr); gap: 8px; padding-top: 24px; padding-bottom: 64px; }
+      .hc-media { order: -1; min-height: 300px; }
+      .hc-jersey { width: min(78%, 340px); }
+      .hc-slide.is-photo { min-height: 560px; align-items: flex-end; }
+      .hc-slide.is-photo .hc-glow { background: linear-gradient(0deg, rgba(5,5,5,.95) 0%, rgba(5,5,5,.5) 50%, transparent 80%); }
+      .hc-nav { display: none; }
+    }
+
+    /* ── CONFIANZA ───────────────────────────────────────── */
+    .trust { background: var(--panel); border-block: 1px solid var(--line); }
+    .trust-grid {
+      display: grid; grid-template-columns: repeat(4, minmax(0,1fr));
+      gap: 24px; padding-top: 22px; padding-bottom: 22px;
+    }
+    .trust-grid > div { display: flex; gap: 12px; align-items: flex-start; }
+    .trust-grid svg { flex: none; color: var(--gold); margin-top: 2px; }
+    .trust-grid strong { display: block; font-size: .9rem; }
+    .trust-grid span { font-size: .8rem; color: var(--muted); }
+
+    /* ── BLOQUES ─────────────────────────────────────────── */
+    .block { padding: 56px 0; }
+    .block-head {
+      display: flex; justify-content: space-between; align-items: flex-end;
+      gap: 16px; flex-wrap: wrap; margin-bottom: 24px;
+    }
+    .block-title {
+      font-family: 'Bebas Neue', cursive; font-weight: 400;
+      font-size: clamp(2.2rem, 4vw, 3.2rem); line-height: .95; letter-spacing: 1px;
+      text-wrap: balance;
+    }
+    .cat-count { font-size: .85rem; color: var(--muted); }
+
+    /* categorías */
+    .tiles { display: grid; grid-template-columns: repeat(5, minmax(0,1fr)); gap: 14px; }
+    .tile {
+      position: relative; border-radius: 10px; overflow: hidden;
+      background: var(--photo); aspect-ratio: 3/4; border: 1px solid var(--line);
+      cursor: pointer; padding: 0; color: var(--white); text-align: left;
+    }
+    .tile img { width: 100%; height: 100%; object-fit: cover; opacity: .8; transition: transform .45s, opacity .3s; display: block; }
+    .tile:hover img { transform: scale(1.05); opacity: 1; }
+    .tile .cap {
+      position: absolute; inset: auto 0 0; padding: 14px;
+      background: linear-gradient(transparent, rgba(0,0,0,.92));
+    }
+    .tile .cap strong { display: block; font-family: 'Bebas Neue', cursive; font-weight: 400; font-size: 1.7rem; line-height: 1; }
+    .tile .cap span { font-size: .75rem; color: var(--soft); }
+
+    /* ── FILTROS ─────────────────────────────────────────── */
+    .filters { display: grid; gap: 14px; margin-bottom: 26px; }
+    .filters-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+    .chips-lbl { font-size: .78rem; color: var(--muted); margin-right: 2px; }
+    #tallaChips { margin-right: auto; }
+    .chip {
+      border: 1px solid #3a3934; background: transparent; color: var(--white);
+      border-radius: 999px; padding: 7px 15px;
+      font-family: 'Inter', sans-serif; font-size: .82rem; font-weight: 600; cursor: pointer;
+      transition: background .2s, color .2s, border-color .2s;
+    }
+    .chip:hover { border-color: var(--white); }
+    .chip[aria-pressed="true"] { background: var(--white); color: var(--bg); border-color: var(--white); }
+    .chip-sm { padding: 5px 12px; font-size: .78rem; }
+    .f-select {
+      background: var(--panel); border: 1px solid var(--line); color: var(--white);
+      padding: 9px 12px; border-radius: 7px;
+      font-family: 'Inter', sans-serif; font-size: .84rem; outline: none; cursor: pointer;
+    }
+    .f-select:focus { border-color: var(--green); }
+    .f-select option { background: #222; }
+    .clear-btn {
+      background: none; border: 0; color: var(--red-t); font: inherit;
+      font-size: .84rem; font-weight: 600; cursor: pointer; padding: 8px 4px;
+    }
+    .clear-btn:hover { text-decoration: underline; }
+
+    /* ── CATÁLOGO / TARJETAS ─────────────────────────────── */
+    .products-grid {
+      display: grid; grid-template-columns: repeat(4, minmax(0,1fr));
+      gap: 28px 18px;
+    }
+    .no-results {
+      grid-column: 1/-1; text-align: center;
+      padding: 3rem 1rem; color: var(--muted); font-size: 1rem;
+    }
+    .no-results a { color: var(--green-t); }
+    .product-card { display: flex; flex-direction: column; gap: 9px; position: relative; }
+    .card-img-wrap {
+      position: relative; background: var(--photo);
+      border-radius: 10px; overflow: hidden; aspect-ratio: 4/5; cursor: pointer;
+    }
+    .card-img-wrap img { width: 100%; height: 100%; object-fit: cover; transition: transform .4s; display: block; }
+    .product-card:hover .card-img-wrap img { transform: scale(1.05); }
+    .card-placeholder {
+      width: 100%; height: 100%;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .4rem;
+      font-size: 3rem;
+    }
+    .card-placeholder .ph-flag { font-size: 3.8rem; }
+    .card-placeholder .ph-label { font-family: 'Bebas Neue', cursive; font-size: .8rem; letter-spacing: 2px; opacity: .55; }
+    .card-badges { position: absolute; top: 10px; left: 10px; right: 10px; display: flex; gap: 6px; flex-wrap: wrap; }
+    .badge-country {
+      position: absolute; top: 10px; left: 10px;
+      background: rgba(0,0,0,.75); border-radius: 20px; padding: 4px 10px;
+      font-size: .75rem; color: #fff;
+    }
+    .card-sold {
+      position: absolute; inset: 0; background: rgba(0,0,0,.55);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .card-sold span {
+      background: var(--red); color: #fff; font-family: 'Bebas Neue', cursive;
+      font-size: 1.3rem; letter-spacing: 3px; padding: 6px 20px; border-radius: 6px;
+    }
+    .card-quick {
+      position: absolute; left: 10px; right: 10px; bottom: 10px;
+      background: var(--white); color: var(--bg); border: 0; border-radius: 7px;
+      padding: 11px; font-family: 'Inter', sans-serif; font-weight: 700; font-size: .82rem;
+      cursor: pointer; opacity: 0; transform: translateY(6px); transition: opacity .2s, transform .2s, background .2s;
+    }
+    .card-quick:hover { background: var(--gold); }
+    .product-card:hover .card-quick, .product-card:focus-within .card-quick { opacity: 1; transform: none; }
+    .card-body { display: flex; flex-direction: column; gap: 6px; }
+    .card-meta-line {
+      font-family: var(--mono); font-size: .7rem; letter-spacing: .05em;
+      text-transform: uppercase; color: var(--muted);
+    }
+    .card-name {
+      font-family: 'Inter', sans-serif; font-size: .95rem; font-weight: 600;
+      line-height: 1.3; color: var(--white); cursor: pointer;
+    }
+    .card-name:hover { color: var(--gold); }
+    .card-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+    .card-price { font-size: 1.05rem; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--white); }
+    .card-price .agotado { color: var(--red-t); font-size: .9rem; }
+    .size2 { font-family: var(--mono); font-size: .72rem; border: 1px solid #3a3934; border-radius: 3px; padding: 2px 7px; white-space: nowrap; }
+    .cond { display: flex; align-items: center; gap: 6px; font-size: .74rem; color: var(--muted); }
+    .cond i { display: inline-flex; gap: 2px; }
+    .cond i b { width: 8px; height: 4px; border-radius: 1px; background: #3a3934; }
+    .cond i b.on { background: var(--green-t); }
+    .product-card.sold .card-img-wrap img { filter: grayscale(.7); }
+
+    /* parches usan estos botones */
+    .card-actions { display: flex; flex-direction: column; gap: .5rem; margin-top: 4px; }
+    .btn-details, .btn-add-card {
+      width: 100%; padding: 10px; border-radius: 7px;
+      font-family: 'Inter', sans-serif; font-weight: 700; font-size: .82rem;
+      cursor: pointer; border: 1px solid; transition: all .25s;
+    }
+    .btn-details  { background: var(--green); color: #fff; border-color: var(--green); }
+    .btn-add-card { background: transparent; color: var(--white); border-color: #3a3934; }
+    .btn-add-card:hover:not(:disabled) { border-color: var(--white); }
+
+    /* ── MODAL / FICHA DE PRODUCTO ───────────────────────── */
+    .modal-overlay {
+      position: fixed; inset: 0; z-index: 2000;
+      background: rgba(0,0,0,.88);
+      display: flex; align-items: center; justify-content: center; padding: 1rem;
+      opacity: 0; pointer-events: none; transition: opacity .3s;
+    }
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+    .modal-box {
+      background: var(--panel); border: 1px solid var(--line); border-radius: 14px;
+      max-width: 1040px; width: 100%; max-height: 92vh; overflow-y: auto;
+      position: relative; display: grid; grid-template-columns: minmax(0,1.1fr) minmax(0,1fr);
+      transform: scale(.96); transition: transform .3s;
+    }
+    .modal-overlay.open .modal-box { transform: scale(1); }
+    .modal-close {
+      position: absolute; top: 12px; right: 12px; z-index: 5;
+      width: 36px; height: 36px; border-radius: 50%;
+      background: rgba(255,255,255,.12); border: none; color: #fff; font-size: 1.1rem; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; transition: background .25s;
+    }
+    .modal-close:hover { background: var(--red); }
+    .modal-imgs {
+      background: var(--photo); padding: 1.2rem;
+      display: grid; grid-template-columns: 70px minmax(0,1fr); gap: 12px; align-content: start;
+    }
+    .modal-imgs.single { grid-template-columns: minmax(0,1fr); }
+    .modal-main-img { width: 100%; aspect-ratio: 4/5; object-fit: cover; border-radius: 8px; display: block; grid-column: -2; grid-row: 1; }
+    .modal-ph-lg { width: 100%; aspect-ratio: 4/5; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 5rem; }
+    .modal-thumbs { display: grid; gap: 10px; align-content: start; grid-column: 1; grid-row: 1; }
+    .modal-thumb {
+      width: 100%; aspect-ratio: 4/5; object-fit: cover; border-radius: 6px; cursor: pointer;
+      border: 2px solid transparent; transition: border-color .2s;
+    }
+    .modal-thumb.active, .modal-thumb:hover { border-color: var(--gold); }
+    .modal-info { padding: 2rem 1.8rem; display: flex; flex-direction: column; gap: 1rem; }
+    .modal-crumbs { font-size: .76rem; color: var(--muted); padding-right: 40px; }
+    .modal-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+    .modal-name {
+      font-family: 'Bebas Neue', cursive; font-weight: 400;
+      font-size: clamp(1.9rem, 3.4vw, 2.8rem); letter-spacing: 1px; line-height: 1; text-wrap: balance;
+    }
+    .modal-price { font-family: 'Bebas Neue', cursive; font-size: 2.6rem; line-height: 1; }
+    .m-scale { border: 1px solid var(--line); border-radius: 8px; padding: 14px; display: grid; gap: 10px; background: var(--bg); }
+    .m-scale-top { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+    .m-scale-top strong { font-family: 'Bebas Neue', cursive; font-weight: 400; font-size: 1.5rem; color: var(--green-t); }
+    .m-meter { display: grid; grid-template-columns: repeat(10,1fr); gap: 3px; }
+    .m-meter b { height: 8px; border-radius: 2px; background: #33322d; }
+    .m-meter b.on { background: var(--green-t); }
+    .m-scale p { font-size: .82rem; color: var(--soft); line-height: 1.5; }
+    .m-measure { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 8px; }
+    .m-measure div { border: 1px solid var(--line); border-radius: 6px; padding: 10px 6px; text-align: center; }
+    .m-measure strong { display: block; font-family: var(--mono); font-size: 1.02rem; font-variant-numeric: tabular-nums; }
+    .m-measure span { font-size: .66rem; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; }
+    .m-specs { display: grid; grid-template-columns: auto 1fr; gap: 6px 16px; font-size: .84rem; margin: 0; }
+    .m-specs dt { color: var(--muted); }
+    .m-specs dd { margin: 0; font-weight: 600; }
+    .modal-desc { font-size: .88rem; color: var(--soft); line-height: 1.7; }
+    .modal-actions { display: grid; gap: .6rem; }
+    .m-ship { font-size: .82rem; color: var(--soft); display: grid; gap: 6px; border-top: 1px solid var(--line); padding-top: 14px; }
+    .m-ship div { display: flex; gap: 10px; }
+    .m-ship b { color: var(--white); min-width: 92px; flex: none; }
+    .btn-cart-modal {
+      width: 100%; padding: 14px; background: var(--green); color: #fff; border: none; border-radius: 7px;
+      font-family: 'Inter', sans-serif; font-weight: 700; font-size: .92rem; cursor: pointer; transition: background .25s;
+    }
+    .btn-cart-modal:hover { background: #05a352; }
+    .btn-cart-modal:disabled { opacity: .4; cursor: not-allowed; }
+    .btn-wa {
+      display: flex; align-items: center; justify-content: center; gap: .5rem;
+      background: transparent; color: var(--green-t); border: 1px solid var(--green);
+      border-radius: 7px; padding: 12px;
+      font-family: 'Inter', sans-serif; font-weight: 700; font-size: .88rem;
+      cursor: pointer; text-decoration: none; transition: background .25s;
+    }
+    .btn-wa:hover { background: rgba(7,143,71,.15); }
+    .btn-wa svg { width: 18px; height: 18px; fill: currentColor; flex-shrink: 0; }
+    .badge-talla { background: var(--green); color: #fff; font-size: .75rem; font-weight: 700; padding: 3px 10px; border-radius: 4px; }
+
+    /* ── PASOS ───────────────────────────────────────────── */
+    .steps { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 16px; counter-reset: paso; }
+    .step { border: 1px solid var(--line); border-radius: 10px; padding: 22px; background: var(--panel); }
+    .step::before {
+      counter-increment: paso; content: 'Paso ' counter(paso);
+      font-family: var(--mono); font-size: .72rem; letter-spacing: .12em; text-transform: uppercase; color: var(--gold);
+    }
+    .step h3 { font-family: 'Bebas Neue', cursive; font-weight: 400; font-size: 1.8rem; margin: 10px 0 6px; letter-spacing: 1px; }
+    .step p { font-size: .88rem; color: var(--soft); line-height: 1.6; }
+
+    /* ── ENCARGOS ────────────────────────────────────────── */
+    .hunt {
+      background: linear-gradient(120deg, #0f2a1b 0%, #0a0a0a 55%, #2a0b0a 100%);
+      border-block: 1px solid var(--line);
+    }
+    .hunt-grid {
+      display: grid; grid-template-columns: minmax(0,1.2fr) minmax(0,1fr);
+      gap: 36px; align-items: center; padding-top: 60px; padding-bottom: 60px;
+    }
+    .hunt .block-title { font-size: clamp(2.4rem, 4.5vw, 3.8rem); }
+    .hunt-text { color: var(--soft); max-width: 52ch; line-height: 1.65; margin-top: 1rem; }
+    .hunt-form {
+      display: grid; gap: 8px; background: rgba(0,0,0,.5);
+      border: 1px solid var(--line); border-radius: 12px; padding: 22px;
+    }
+    .hunt-form label { font-size: .72rem; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; margin-top: 4px; }
+    .hunt-form input, .hunt-form select {
+      background: var(--bg); border: 1px solid #3a3934; border-radius: 7px;
+      padding: 11px 12px; color: var(--white); font: inherit; font-size: .9rem; width: 100%; outline: none;
+    }
+    .hunt-form input:focus, .hunt-form select:focus { border-color: var(--green); }
+    .hunt-form .btn2 { margin-top: 10px; }
+    .hunt-msg { font-size: .84rem; min-height: 1.2em; }
+    .hunt-msg.ok { color: var(--green-t); }
+    .hunt-msg.err { color: var(--red-t); }
+
+    /* ── NOSOTROS ────────────────────────────────────────── */
+    .nosotros-grid { display: grid; grid-template-columns: auto minmax(0,1fr); gap: 40px; align-items: center; }
+    .nosotros-logo { height: 160px; width: auto; }
+    .nosotros-text { color: var(--soft); font-size: 1rem; line-height: 1.8; max-width: 62ch; margin-top: 1rem; }
+
+    /* ── FOOTER ──────────────────────────────────────────── */
+    footer { background: #050505; border-top: 1px solid var(--line); padding: 3rem 0 1.5rem; }
+    .footer-cols { display: grid; grid-template-columns: 2fr repeat(3, 1fr); gap: 28px; margin-bottom: 2rem; }
+    .footer-brand { display: flex; align-items: center; gap: 10px; }
+    .footer-brand img { height: 42px; }
+    .footer-brand span { font-family: 'Bebas Neue', cursive; font-size: 1.4rem; color: var(--gold); }
+    .footer-about { color: var(--muted); font-size: .86rem; margin-top: .8rem; max-width: 36ch; line-height: 1.6; }
+    .pay { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 12px; }
+    .pay span { border: 1px solid #3a3934; border-radius: 4px; padding: 3px 8px; font-size: .7rem; font-family: var(--mono); color: var(--soft); }
+    footer h4 { font-size: .76rem; letter-spacing: .1em; text-transform: uppercase; margin-bottom: .7rem; }
+    .footer-links { display: flex; flex-direction: column; gap: .45rem; }
+    .footer-links a { color: var(--muted); text-decoration: none; font-size: .88rem; transition: color .25s; }
+    .footer-links a:hover { color: var(--green-t); }
+    .footer-contact p { color: var(--muted); font-size: .88rem; margin-bottom: .45rem; }
+    .footer-contact a { color: var(--green-t); text-decoration: none; }
+    .footer-contact a.insta { color: var(--gold); }
+    .footer-bottom { border-top: 1px solid #1a1a1a; padding-top: 1.4rem; text-align: center; color: var(--muted); font-size: .78rem; }
+
+    /* ── RESPONSIVE ──────────────────────────────────────── */
+    @media (max-width: 1024px) {
+      .products-grid { grid-template-columns: repeat(3, minmax(0,1fr)); }
+      .tiles { grid-template-columns: repeat(3, minmax(0,1fr)); }
+      .trust-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    }
+    @media (max-width: 860px) {
+      .hero-grid, .hunt-grid { grid-template-columns: minmax(0,1fr); }
+      .modal-box { grid-template-columns: minmax(0,1fr); }
+      .footer-cols { grid-template-columns: 1fr 1fr; }
+      .cart-sidebar { width: 100%; right: -100%; }
+      .cart-sidebar.open { right: 0; }
+    }
+    @media (max-width: 680px) {
+      .hdr-bar { grid-template-columns: auto auto; gap: 10px 12px; }
+      .hdr-search { grid-column: 1 / -1; order: 3; max-width: none; }
+      .header-right { justify-self: end; }
+      .menu-toggle { display: flex; }
+      .cat-nav { gap: 20px; }
+      .header-logo img { height: 38px; }
+      .header-logo span { font-size: 1.35rem; }
+      .auth-btn { padding: 6px 10px; }
+      .promo-bar span + span::before { display: none; }
+      .promo-bar span:not(:first-child) { display: none; }
+      .feature { grid-template-columns: minmax(0,1fr); }
+      .products-grid { grid-template-columns: repeat(2, minmax(0,1fr)); gap: 22px 12px; }
+      .tiles { grid-template-columns: repeat(2, minmax(0,1fr)); }
+      .trust-grid, .steps { grid-template-columns: minmax(0,1fr); }
+      .card-quick { position: static; opacity: 1; transform: none; margin-top: 8px; background: transparent; color: var(--white); border: 1px solid #3a3934; }
+      .card-img-wrap .card-quick { display: none; }
+      .card-quick-m { display: block !important; }
+      .filters-row .f-select { flex: 1 1 140px; }
+      .modal-imgs { grid-template-columns: minmax(0,1fr); }
+      .modal-thumbs { grid-template-columns: repeat(4, 60px); grid-row: 2; grid-column: 1; }
+      .modal-main-img, .modal-ph-lg { grid-column: 1; }
+      .modal-info { padding: 1.4rem 1.1rem; }
+      .nosotros-grid { grid-template-columns: minmax(0,1fr); justify-items: center; text-align: center; }
+      .nosotros-logo { height: 110px; }
+      .footer-cols { grid-template-columns: minmax(0,1fr); }
+      .hero-stats { gap: 24px; }
+    }
+    .card-quick-m { display: none; }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { transition: none !important; animation: none !important; scroll-behavior: auto !important; }
+    }
   </style>
 </head>
 <body>
 
+<!-- ═══════════════════ BARRA PROMO ═══════════════════════════ -->
+<div class="promo-bar">
+  <span>Envíos a todo México desde $70</span>
+  <span>Paga con tarjeta u OXXO vía Mercado Pago</span>
+  <span>Jerseys originales, revisados pieza por pieza</span>
+</div>
+
 <!-- ═══════════════════ HEADER ═══════════════════════════════ -->
 <header>
-  <a href="#inicio" class="header-logo">
-    <img src="LOGO/Logo.png" alt="VJM Logo" onerror="this.style.display='none'">
-    <span>VJM Jerseys</span>
-  </a>
-  <nav class="desktop">
-    <a href="#inicio">Inicio</a>
-    <a href="#catalogo">Catálogo</a>
-    <a href="#nosotros">Nosotros</a>
-    <a href="#contacto">Contacto</a>
-  </nav>
-  <div class="header-right">
-    <!-- Botón login (visible cuando NO hay sesión) -->
-    <button class="auth-btn" id="loginBtn">👤 INGRESAR</button>
+  <div class="hdr-bar">
+    <a href="#inicio" class="header-logo">
+      <img src="LOGO/Logo.png" alt="VJM Logo" onerror="this.style.display='none'">
+      <span>VJM Jerseys</span>
+    </a>
 
-    <!-- Menú usuario (visible cuando SÍ hay sesión) -->
-    <div class="user-menu-wrap" id="userMenuWrap">
-      <button class="user-menu-btn" id="userMenuBtn">
-        <span>👤</span>
-        <span class="uname" id="userName">Usuario</span>
-        <span>▾</span>
-      </button>
-      <div class="user-dropdown" id="userDropdown">
-        <button id="ddProfile"><span class="dicon">⚙️</span> Mi Perfil</button>
-        <button id="ddOrders"><span class="dicon">📦</span> Mis Pedidos</button>
-        <button id="ddAdmin" style="display:none"><span class="dicon">📋</span> Todos los pedidos</button>
-        <hr>
-        <button class="dd-logout" id="ddLogout"><span class="dicon">🚪</span> Cerrar Sesión</button>
+    <label class="hdr-search" for="srchInput">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input type="search" id="srchInput" placeholder="Busca club, jugador o año: Monterrey 2004, Ronaldo…" autocomplete="off">
+    </label>
+
+    <div class="header-right">
+      <!-- Botón login (visible cuando NO hay sesión) -->
+      <button class="auth-btn" id="loginBtn">INGRESAR</button>
+
+      <!-- Menú usuario (visible cuando SÍ hay sesión) -->
+      <div class="user-menu-wrap" id="userMenuWrap">
+        <button class="user-menu-btn" id="userMenuBtn">
+          <span>👤</span>
+          <span class="uname" id="userName">Usuario</span>
+          <span>▾</span>
+        </button>
+        <div class="user-dropdown" id="userDropdown">
+          <button id="ddProfile"><span class="dicon">⚙️</span> Mi Perfil</button>
+          <button id="ddOrders"><span class="dicon">📦</span> Mis Pedidos</button>
+          <button id="ddAdmin" style="display:none"><span class="dicon">📋</span> Todos los pedidos</button>
+          <hr>
+          <button class="dd-logout" id="ddLogout"><span class="dicon">🚪</span> Cerrar Sesión</button>
+        </div>
       </div>
-    </div>
 
-    <button class="menu-toggle" id="menuToggle" aria-label="Menú">&#9776;</button>
-    <button class="cart-btn" id="cartBtn" aria-label="Carrito">
-      🛒
-      <span class="cart-count hidden" id="cartCount">0</span>
-    </button>
+      <button class="cart-btn" id="cartBtn" aria-label="Carrito">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 4h2l2.4 11h11.2L21 7H6"/><circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/></svg>
+        <span class="cart-count hidden" id="cartCount">0</span>
+      </button>
+      <button class="menu-toggle" id="menuToggle" aria-label="Menú">&#9776;</button>
+    </div>
   </div>
+
+  <nav class="cat-nav" aria-label="Categorías">
+    <a href="#catalogo" data-goto-cat="nuevos" class="cat-on">Recién llegados</a>
+    <a href="#catalogo" data-goto-cat="ligamx">Liga MX</a>
+    <a href="#catalogo" data-goto-cat="selecciones">Selecciones</a>
+    <a href="#catalogo" data-goto-cat="europa">Europa</a>
+    <a href="#catalogo" data-goto-cat="america">Sudamérica y MLS</a>
+    <a href="#catalogo" data-goto-cat="dorsal">Con nombre y número</a>
+    <a href="#catalogo" data-goto-cat="retro">Retro (antes de 2010)</a>
+    <a href="#parches">Parches</a>
+    <a href="#encargos" class="cat-hot">Encargos</a>
+  </nav>
+
+  <nav class="mobile-nav" id="mobileNav">
+    <a href="#inicio"   class="mnav-link">Inicio</a>
+    <a href="#catalogo" class="mnav-link">Catálogo</a>
+    <a href="#parches"  class="mnav-link">Parches</a>
+    <a href="#encargos" class="mnav-link">Encargos</a>
+    <a href="#nosotros" class="mnav-link">Nosotros</a>
+    <a href="#contacto" class="mnav-link">Contacto</a>
+  </nav>
 </header>
 
-<nav class="mobile-nav" id="mobileNav">
-  <a href="#inicio"   class="mnav-link">Inicio</a>
-  <a href="#catalogo" class="mnav-link">Catálogo</a>
-  <a href="#nosotros" class="mnav-link">Nosotros</a>
-  <a href="#contacto" class="mnav-link">Contacto</a>
-</nav>
+<!-- ═══════════════════ CARRUSEL PRINCIPAL ═════════════════════ -->
+<section class="hc" id="inicio" aria-roledescription="carrusel" aria-label="Jerseys de la semana">
+  <div class="hc-track" id="hcTrack">
+    <div class="hc-slide is-active hc-loading"><div class="wrap hc-inner"><div class="hc-copy">
+      <p class="eyebrow">Cargando jerseys de la semana…</p>
+    </div></div></div>
+  </div>
+  <button class="hc-nav hc-prev" id="hcPrev" aria-label="Jersey anterior" hidden>
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m15 5-7 7 7 7"/></svg>
+  </button>
+  <button class="hc-nav hc-next" id="hcNext" aria-label="Jersey siguiente" hidden>
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m9 5 7 7-7 7"/></svg>
+  </button>
+  <div class="hc-dots" id="hcDots"></div>
+</section>
 
-<!-- ═══════════════════ HERO ═══════════════════════════════════ -->
-<section class="hero" id="inicio">
-  <div class="hero-stripes"></div>
-  <div class="hero-watermark">VJM</div>
-
-  <div class="hero-inner">
-
-    <!-- IZQUIERDA: logo + texto + CTA -->
-    <div class="hero-left">
-      <h1 class="hero-headline">
-        VENTA DE<br>
-        <em>JERSEYS</em><br>
-        <span>MÉXICO</span>
-      </h1>
-
-      <img src="LOGO/Logo.png" alt="VJM" class="hero-logo-img"
-           onerror="this.style.display='none'">
-
+<!-- ═══════════════════ PIEZA DE LA SEMANA ═════════════════════ -->
+<section class="hero" id="semana">
+  <div class="wrap hero-grid">
+    <div class="hero-copy">
+      <p class="eyebrow">Jerseys originales · Envíos a todo México</p>
+      <h1 class="hero-headline">Jerseys con historia,<br><span>listos para tu colección</span></h1>
       <p class="hero-sub">
-        Piezas únicas de selecciones y clubes icónicos de todo el mundo.
-        Cada jersey tiene una historia — encuentra la tuya.
+        Piezas únicas de Liga MX, selecciones y clubes de Europa y Sudamérica.
+        Cada jersey lo revisamos y fotografiamos nosotros antes de publicarlo.
       </p>
-
-      <div class="hero-stats">
-        <div class="hero-stat">
-          <span class="snum">27</span>
-          <span class="slbl">Disponibles</span>
-        </div>
-        <div class="hero-stat">
-          <span class="snum">MX</span>
-          <span class="slbl">Envíos</span>
-        </div>
-      </div>
-
       <div class="hero-btns">
-        <a href="#catalogo" class="btn btn-green">VER CATÁLOGO</a>
-        <a href="https://wa.me/528116544571?text=Hola!%20Me%20interesa%20comprar%20un%20jersey%20de%20VJM"
-           target="_blank" class="btn btn-outline-red">WHATSAPP</a>
+        <a href="#catalogo" class="btn2 btn2-primary">Ver catálogo</a>
+        <a href="#encargos" class="btn2 btn2-wa">¿Buscas uno en específico?</a>
+      </div>
+      <div class="hero-stats">
+        <div><strong id="statDisponibles">67</strong><span>Piezas disponibles</span></div>
+        <div><strong id="statLigas">16</strong><span>Ligas y selecciones</span></div>
+        <div><strong>1 de 1</strong><span>Cada pieza es única</span></div>
       </div>
     </div>
 
-    <!-- DERECHA: jerseys flotando -->
-    <div class="hero-right">
-      <div class="hero-circle"></div>
-
-      <!-- Tarjeta principal: San Diego -->
-      <div class="hj-card hj-main">
-        <span class="hj-badge hj-badge-new">NUEVO</span>
-        <img src="Jerseys/Norte america/Mls/San Diego/SD1.png" alt="San Diego FC 2025"
-             onerror="this.style.background='#1a1a1a'">
-        <div class="hj-card-body">
-          <div class="hj-card-name">San Diego FC 2025</div>
-          <div class="hj-card-price">$880 MXN</div>
-        </div>
+    <article class="feature" id="featureCard" hidden>
+      <button class="feature-ph" id="featOpen" aria-label="Ver detalles de la pieza destacada">
+        <img id="featImg" src="" alt="">
+        <span class="tag2 tag2-gold">Pieza de la semana</span>
+      </button>
+      <div class="feature-info">
+        <span class="feature-dorsal" id="featDorsal"></span>
+        <h2 class="feature-name" id="featName"></h2>
+        <dl class="kv" id="featKv"></dl>
+        <div class="feature-price" id="featPrice"></div>
+        <p class="feature-week" id="featWeek">Cambia cada lunes</p>
+        <button class="btn2 btn2-primary" id="featBtn">Ver la pieza</button>
       </div>
-
-      <!-- Tarjeta secundaria: Independiente -->
-      <div class="hj-card hj-secondary">
-        <span class="hj-badge hj-badge-club">🇦🇷 Argentina</span>
-        <img src="Jerseys/Sudamerica/Primera division arg/Independiente/IND1.png" alt="Independiente 2012"
-             onerror="this.style.background='#1a1a1a'">
-        <div class="hj-card-body">
-          <div class="hj-card-name">Independiente 2012</div>
-          <div class="hj-card-price">$1,650 MXN</div>
-        </div>
-      </div>
-
-    </div>
+    </article>
   </div>
 </section>
 
-<!-- ═══════════════════ PARCHES MUNDIAL BANNER ═════════════════ -->
+<!-- ═══════════════════ CONFIANZA ══════════════════════════════ -->
+<div class="trust">
+  <div class="wrap trust-grid">
+    <div>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z"/><path d="m9 12 2 2 4-4"/></svg>
+      <p><strong>Originales verificados</strong><span>Revisamos etiqueta interna, código y costuras.</span></p>
+    </div>
+    <div>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="12" cy="12" r="3"/></svg>
+      <p><strong>Fotos de la pieza real</strong><span>Lo que ves es exactamente lo que recibes.</span></p>
+    </div>
+    <div>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7"/><circle cx="7" cy="18" r="1.6"/><circle cx="17" cy="18" r="1.6"/></svg>
+      <p><strong>Envío con guía de rastreo</strong><span>Correos de México $70 o DHL Express $250.</span></p>
+    </div>
+    <div>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 12a9 9 0 0 1-13.5 7.8L3 21l1.2-4.5A9 9 0 1 1 21 12z"/></svg>
+      <p><strong>Atención directa</strong><span>Resolvemos tus dudas por WhatsApp antes y después de comprar.</span></p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ CATEGORÍAS ═════════════════════════════ -->
+<section class="block">
+  <div class="wrap">
+    <div class="block-head">
+      <div><p class="eyebrow">Compra por categoría</p><h2 class="block-title">¿De qué equipo eres?</h2></div>
+    </div>
+    <div class="tiles" id="catTiles"></div>
+  </div>
+</section>
+
+<!-- ═══════════════════ CATÁLOGO ═══════════════════════════════ -->
+<section id="catalogo" class="block">
+  <div class="wrap">
+    <div class="block-head">
+      <div><p class="eyebrow">Actualizado cada semana</p><h2 class="block-title" id="catTitle">Recién llegados</h2></div>
+      <span class="cat-count" id="catCount"></span>
+    </div>
+
+    <div class="filters">
+      <div class="chips" role="group" aria-label="Categoría" id="catChips">
+        <button class="chip" data-cat="nuevos" aria-pressed="true">Todos</button>
+        <button class="chip" data-cat="ligamx" aria-pressed="false">Liga MX</button>
+        <button class="chip" data-cat="selecciones" aria-pressed="false">Selecciones</button>
+        <button class="chip" data-cat="europa" aria-pressed="false">Europa</button>
+        <button class="chip" data-cat="america" aria-pressed="false">Sudamérica y MLS</button>
+        <button class="chip" data-cat="dorsal" aria-pressed="false">Con dorsal</button>
+        <button class="chip" data-cat="retro" aria-pressed="false">Retro</button>
+      </div>
+      <div class="filters-row">
+        <div class="chips" role="group" aria-label="Talla" id="tallaChips">
+          <span class="chips-lbl">Talla</span>
+          <button class="chip chip-sm" data-talla="" aria-pressed="true">Todas</button>
+          <button class="chip chip-sm" data-talla="S" aria-pressed="false">S</button>
+          <button class="chip chip-sm" data-talla="M" aria-pressed="false">M</button>
+          <button class="chip chip-sm" data-talla="L" aria-pressed="false">L</button>
+          <button class="chip chip-sm" data-talla="XL" aria-pressed="false">XL</button>
+        </div>
+        <select class="f-select" id="countryFilter" aria-label="País">
+          <option value="">Todos los países</option>
+        </select>
+        <select class="f-select" id="leagueFilter" aria-label="Liga">
+          <option value="">Todas las ligas</option>
+        </select>
+        <select class="f-select" id="priceFilter" aria-label="Ordenar">
+          <option value="">Más nuevos</option>
+          <option value="asc">Precio: menor a mayor</option>
+          <option value="desc">Precio: mayor a menor</option>
+        </select>
+        <button class="clear-btn" id="clearBtn">Limpiar filtros</button>
+      </div>
+    </div>
+
+    <div class="products-grid" id="productsGrid"></div>
+  </div>
+</section>
+
+<!-- ═══════════════════ PARCHES ════════════════════════════════ -->
 <section class="parches-carousel" id="parchesCarousel">
   <div class="parches-slides" id="parchesSlides"></div>
   <div class="parches-overlay"></div>
@@ -1140,93 +1232,103 @@
   <div class="parches-dots" id="parchesDots"></div>
 </section>
 
-<!-- ═══════════════════ PARCHES CATALOGO ═══════════════════════ -->
-<section id="parches" style="padding-top:3rem;">
-  <div style="padding:0 2rem 1rem;max-width:1400px;margin:0 auto;">
-    <h2 class="section-title">PARCHES</h2>
+<section id="parches" class="block">
+  <div class="wrap">
+    <div class="block-head">
+      <div><p class="eyebrow">Completa tu jersey</p><h2 class="block-title">Parches</h2></div>
+    </div>
+    <div class="products-grid" id="parchesGrid"></div>
   </div>
-  <div class="products-grid" id="parchesGrid" style="padding:0 2rem 4rem;max-width:1400px;margin:0 auto;"></div>
 </section>
 
-<!-- ═══════════════════ FILTERS ════════════════════════════════ -->
-<div class="filters-wrap">
-  <div class="filters-row">
-    <input type="text" class="f-input" id="srchInput" placeholder="🔍  Buscar jersey, club o marca...">
-    <select class="f-select" id="countryFilter">
-      <option value="">Todos los países</option>
-      <option value="Argentina">🇦🇷  Argentina</option>
-      <option value="Estados Unidos">🇺🇸  Estados Unidos</option>
-    </select>
-    <select class="f-select" id="leagueFilter">
-      <option value="">Todas las ligas</option>
-      <option value="Liga Profesional Argentina">Liga Profesional Argentina</option>
-      <option value="MLS">MLS</option>
-    </select>
-    <select class="f-select" id="priceFilter">
-      <option value="">Precio</option>
-      <option value="asc">Menor a mayor</option>
-      <option value="desc">Mayor a menor</option>
-    </select>
-    <button class="btn btn-outline-red" id="clearBtn" style="padding:10px 18px;font-size:.85rem;">LIMPIAR FILTROS</button>
+<!-- ═══════════════════ CÓMO COMPRAR ═══════════════════════════ -->
+<section class="block" id="comoComprar">
+  <div class="wrap">
+    <div class="block-head">
+      <div><p class="eyebrow">Sin complicaciones</p><h2 class="block-title">Así compras en VJM</h2></div>
+    </div>
+    <div class="steps">
+      <div class="step"><h3>Elige tu pieza</h3><p>Filtra por club, talla o época. Si tienes dudas de la medida, pregúntanos por WhatsApp antes de pagar.</p></div>
+      <div class="step"><h3>Paga seguro</h3><p>Tarjeta u OXXO con Mercado Pago. Nunca vemos los datos de tu tarjeta.</p></div>
+      <div class="step"><h3>Recíbela en casa</h3><p>Te mandamos el número de guía para que la rastrees hasta tu puerta.</p></div>
+    </div>
   </div>
-</div>
+</section>
 
-<!-- ═══════════════════ CATALOG ════════════════════════════════ -->
-<section id="catalogo">
-  <div style="padding:0 2rem 1rem;max-width:1400px;margin:0 auto;">
-    <h2 class="section-title">CATÁLOGO</h2>
+<!-- ═══════════════════ ENCARGOS ═══════════════════════════════ -->
+<section class="hunt" id="encargos">
+  <div class="wrap hunt-grid">
+    <div>
+      <p class="eyebrow">Encargos</p>
+      <h2 class="block-title">¿No está el que buscas? Te lo conseguimos.</h2>
+      <p class="hunt-text">Dinos el club, la temporada y tu talla. Te avisamos por WhatsApp cuando llegue algo parecido, antes de publicarlo en la tienda.</p>
+    </div>
+    <form class="hunt-form" id="encargoForm" autocomplete="on">
+      <label for="encClub">Club o selección y temporada</label>
+      <input id="encClub" required maxlength="120" placeholder="Ej. Pumas 1998 visitante">
+      <label for="encTalla">Talla</label>
+      <select id="encTalla">
+        <option value="M">M</option><option value="S">S</option><option value="L">L</option><option value="XL">XL</option><option value="Cualquiera">Cualquiera</option>
+      </select>
+      <label for="encNombre">Tu nombre</label>
+      <input id="encNombre" maxlength="80" placeholder="Opcional" autocomplete="name">
+      <label for="encWa">Tu WhatsApp</label>
+      <input id="encWa" required inputmode="tel" maxlength="15" placeholder="10 dígitos" autocomplete="tel">
+      <button type="submit" class="btn2 btn2-primary" id="encBtn">Avísame cuando llegue</button>
+      <p class="hunt-msg" id="encMsg" role="status"></p>
+    </form>
   </div>
-  <div class="products-grid" id="productsGrid" style="padding:0 2rem 5rem;max-width:1400px;margin:0 auto;"></div>
 </section>
 
 <!-- ═══════════════════ NOSOTROS ═══════════════════════════════ -->
-<section id="nosotros">
-  <h2 class="section-title">NOSOTROS</h2>
-  <img src="LOGO/Logo.png" alt="VJM" class="nosotros-logo" onerror="this.style.display='none'">
-  <p class="nosotros-text">
-    Somos apasionados del fútbol y los jerseys. Llevamos años coleccionando y vendiendo
-    piezas únicas de todo el mundo, desde selecciones históricas hasta clubes icónicos.
-    Cada jersey tiene una historia.
-  </p>
-  <div class="nosotros-cards">
-    <div class="nosotros-card">
-      <div class="nc-icon">⚽</div>
-      <h4>Jerseys Únicos</h4>
-      <p>Piezas seleccionadas de todo el mundo</p>
-    </div>
-    <div class="nosotros-card">
-      <div class="nc-icon">🚚</div>
-      <h4>Envío a Todo México</h4>
-      <p>Mandamos a cualquier estado</p>
-    </div>
-    <div class="nosotros-card">
-      <div class="nc-icon">💬</div>
-      <h4>Atención Personalizada</h4>
-      <p>Contáctanos por WhatsApp</p>
+<section id="nosotros" class="block">
+  <div class="wrap nosotros-grid">
+    <img src="LOGO/Logo.png" alt="VJM" class="nosotros-logo" onerror="this.style.display='none'">
+    <div>
+      <p class="eyebrow">Nosotros</p>
+      <h2 class="block-title">Coleccionistas antes que vendedores</h2>
+      <p class="nosotros-text">
+        Somos apasionados del fútbol y los jerseys. Llevamos años coleccionando y vendiendo
+        piezas únicas de todo el mundo, desde selecciones históricas hasta clubes icónicos.
+        Cada jersey tiene una historia, y nos gusta saber a quién se la entregamos.
+      </p>
     </div>
   </div>
 </section>
 
 <!-- ═══════════════════ FOOTER ═════════════════════════════════ -->
 <footer id="contacto">
-  <div class="footer-inner">
-    <div class="footer-top">
-      <div class="footer-brand">
-        <img src="LOGO/Logo.png" alt="VJM" onerror="this.style.display='none'">
-        <span>VJM Jerseys</span>
+  <div class="wrap">
+    <div class="footer-cols">
+      <div>
+        <div class="footer-brand">
+          <img src="LOGO/Logo.png" alt="VJM" onerror="this.style.display='none'">
+          <span>VJM Jerseys</span>
+        </div>
+        <p class="footer-about">Jerseys originales de colección. Desde México, piezas únicas de todo el mundo.</p>
+        <div class="pay"><span>Visa</span><span>Mastercard</span><span>OXXO</span><span>Mercado Pago</span></div>
       </div>
-      <nav class="footer-links">
-        <a href="#inicio">Inicio</a>
-        <a href="#catalogo">Catálogo</a>
+      <nav class="footer-links" aria-label="Tienda">
+        <h4>Tienda</h4>
+        <a href="#catalogo" data-goto-cat="ligamx">Liga MX</a>
+        <a href="#catalogo" data-goto-cat="selecciones">Selecciones</a>
+        <a href="#catalogo" data-goto-cat="europa">Europa</a>
+        <a href="#parches">Parches</a>
+      </nav>
+      <nav class="footer-links" aria-label="Ayuda">
+        <h4>Ayuda</h4>
+        <a href="#comoComprar">Cómo comprar</a>
+        <a href="#encargos">Encargos</a>
         <a href="#nosotros">Nosotros</a>
       </nav>
       <div class="footer-contact">
-        <p>📞 WhatsApp: <a href="https://wa.me/528116544571" target="_blank">81 1654 4571</a></p>
-        <p>📸 Instagram: <a href="#" class="insta">@vjm_jerseys</a></p>
+        <h4>Contacto</h4>
+        <p>WhatsApp: <a href="https://wa.me/528116544571" target="_blank" rel="noopener">81 1654 4571</a></p>
+        <p>Instagram: <a href="#" class="insta">@vjm_jerseys</a></p>
       </div>
     </div>
     <div class="footer-bottom">
-      © 2025 VJM - Venta de Jerseys México &bull; Hecho con ❤️ para los amantes del fútbol
+      © 2026 VJM · Venta de Jerseys México
     </div>
   </div>
 </footer>
@@ -1543,6 +1645,50 @@ var PH_COLORS = {
   2: { bg: 'linear-gradient(135deg,#003087,#001a55)', fg: '#fff' }
 };
 
+/* ── REDISEÑO: helpers de catálogo ────────────────────────────── */
+var PAISES_EUROPA = ['Inglaterra','Escocia','Gales','España','Italia','Alemania','Austria','Países Bajos',
+  'Holanda','Francia','Portugal','Bélgica','Turquía','Dinamarca','Grecia','Suiza','Suecia','Noruega',
+  'Croacia','Serbia','Rusia','Ucrania','Polonia','República Checa','Irlanda','Rumania','Hungría'];
+
+function escHtml(v) {
+  return String(v == null ? '' : v)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+function normTxt(s) {
+  return String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+}
+function fmtPrecio(n) { return '$' + Number(n || 0).toLocaleString('es-MX'); }
+function esSeleccion(p) { return /selecci/i.test(p.liga) || p.liga === 'Internacional' || /^selecci/i.test(p.club); }
+function esVendido(p)   { return p.disponible === false || p.cantidad <= 0; }
+function getDorsal(p) {
+  var m = /#\s?(\d+)/.exec(p.nombre || '');
+  if (!m) return null;
+  var jug = (p.nombre.split(' - ')[1] || '').replace(/#\s?\d+/, '').trim();
+  return { num: m[1], jugador: jug };
+}
+function estadoLabel(e) {
+  return e >= 10 ? 'Como nuevo' : e >= 9 ? 'Excelente' : e >= 8 ? 'Muy bueno' : e >= 7 ? 'Bueno' : 'Con detalles';
+}
+var NUEVOS_IDS = {};
+function marcarNuevos() {
+  NUEVOS_IDS = {};
+  PRODUCTS.slice().sort(function(a,b){ return b.id - a.id; }).slice(0, 8)
+    .forEach(function(p) { NUEVOS_IDS[p.id] = true; });
+}
+
+var CATS = {
+  nuevos:      { t: 'Recién llegados',       f: function()  { return true; } },
+  ligamx:      { t: 'Liga MX',               f: function(p) { return p.liga === 'Liga MX'; } },
+  selecciones: { t: 'Selecciones',           f: esSeleccion },
+  europa:      { t: 'Europa',                f: function(p) { return !esSeleccion(p) && PAISES_EUROPA.indexOf(p.pais) !== -1; } },
+  america:     { t: 'Sudamérica y MLS',      f: function(p) { return !esSeleccion(p) && p.liga !== 'Liga MX' && PAISES_EUROPA.indexOf(p.pais) === -1; } },
+  dorsal:      { t: 'Con nombre y número',   f: function(p) { return !!getDorsal(p); } },
+  retro:       { t: 'Retro (antes de 2010)', f: function(p) { return p.anio && p.anio < 2010; } }
+};
+var filtroCat   = 'nuevos';
+var filtroTalla = '';
+
 /* ── PARCHES (cargados desde Supabase) ────────────────────────── */
 var PARCHES = [];
 var PARCHE_PH_COLORS = {};
@@ -1557,7 +1703,13 @@ function cartTotal() {
 
 function addToCart(pid) {
   var p = PRODUCTS.find(function(x) { return x.id === pid; });
-  if (!p) return;
+  if (!p || esVendido(p)) return;
+  /* cada jersey es pieza única: no se agrega dos veces */
+  if (cart.some(function(i) { return i._tipo === 'jersey' && i.id === pid; })) {
+    showToast('Esta pieza ya está en tu carrito');
+    openCart();
+    return;
+  }
   cart.push(Object.assign({}, p, { _cid: cartIdSeq++, _tipo: 'jersey' }));
   syncCartUI();
   showToast('✅  ' + p.nombre + ' agregado al carrito');
@@ -1737,6 +1889,7 @@ function openModal(pid) {
           }).join('') +
         '</div>'
       : '';
+    imgsEl.classList.toggle('single', modalImgList.length < 2);
     imgsEl.innerHTML =
       '<img id="modalMainImg" src="' + modalImgList[0] + '" ' +
         'class="modal-main-img" alt="' + p.nombre + '" ' +
@@ -1757,22 +1910,66 @@ function openModal(pid) {
   );
   var waHref = 'https://wa.me/' + WA_NUM + '?text=' + waMsg;
 
+  var vendido = esVendido(p);
+  var dorsal  = getDorsal(p);
+
+  var tagsHtml =
+    (vendido ? '<span class="tag2 tag2-player">Vendido</span>' : '<span class="tag2 tag2-gold">Pieza única</span>') +
+    (NUEVOS_IDS[p.id] && !vendido ? '<span class="tag2 tag2-new">Nuevo</span>' : '') +
+    (dorsal ? '<span class="tag2 tag2-player">' + escHtml((dorsal.jugador ? dorsal.jugador + ' ' : '') + '#' + dorsal.num) + '</span>' : '');
+
+  var estadoHtml = '';
+  if (p.estado) {
+    var barras = '';
+    for (var k = 0; k < 10; k++) barras += '<b' + (k < p.estado ? ' class="on"' : '') + '></b>';
+    estadoHtml =
+      '<div class="m-scale">' +
+        '<div class="m-scale-top"><span class="eyebrow" style="margin:0">Estado de la pieza</span>' +
+          '<strong>' + p.estado + ' / 10 · ' + estadoLabel(p.estado) + '</strong></div>' +
+        '<div class="m-meter">' + barras + '</div>' +
+        (p.estadoNota ? '<p>' + escHtml(p.estadoNota) + '</p>' : '') +
+      '</div>';
+  }
+
+  var medidas = [
+    [p.axilaCm, 'Axila a axila'], [p.largoCm, 'Largo'], [p.mangaCm, 'Manga']
+  ].filter(function(m) { return m[0]; });
+  var medidasHtml = medidas.length
+    ? '<div><p class="eyebrow">Medidas reales · Talla ' + escHtml(p.talla) + '</p>' +
+        '<div class="m-measure">' + medidas.map(function(m) {
+          return '<div><strong>' + m[0] + ' cm</strong><span>' + m[1] + '</span></div>';
+        }).join('') + '</div></div>'
+    : '';
+
+  var specs = [
+    ['Club', p.club], ['País', (p.bandera ? p.bandera + ' ' : '') + p.pais], ['Liga', p.liga],
+    ['Marca', p.marca], ['Talla', p.talla], ['Año', p.anio], ['Color', p.color]
+  ].filter(function(s) { return s[1]; });
+
   document.getElementById('modalInfoEl').innerHTML =
-    '<h2 class="modal-name">' + p.nombre + '</h2>' +
-    '<div class="modal-row">' + p.bandera + ' <strong>' + p.club + '</strong></div>' +
-    '<div class="modal-row">🌍 País: <strong>' + p.pais + '</strong></div>' +
-    '<div class="modal-row">🏆 Liga: <strong>' + p.liga + '</strong></div>' +
-    '<div class="modal-row">👕 Marca: <strong style="color:var(--gold)">' + p.marca + '</strong></div>' +
-    '<div class="modal-row">📐 Talla: <span class="badge-talla">' + p.talla + '</span></div>' +
-    '<div class="modal-row">🎨 Color: <strong>' + p.color + '</strong></div>' +
-    '<p class="modal-desc">' + p.descripcion + '</p>' +
-    '<div class="modal-price">$' + p.precio + ' <small>MXN</small></div>' +
+    '<div class="modal-crumbs">Inicio / ' + escHtml(p.liga) + ' / ' + escHtml(p.club) + '</div>' +
+    '<div class="modal-tags">' + tagsHtml + '</div>' +
+    '<h2 class="modal-name">' + escHtml(p.nombre) + '</h2>' +
+    '<div class="modal-price">' + (vendido ? '<span style="color:var(--red-t)">Agotado</span>' : fmtPrecio(p.precio) + ' <small>MXN</small>') + '</div>' +
+    estadoHtml +
+    medidasHtml +
+    '<dl class="m-specs">' + specs.map(function(s) {
+      return '<dt>' + s[0] + '</dt><dd>' + escHtml(s[1]) + '</dd>';
+    }).join('') + '</dl>' +
+    (p.descripcion ? '<p class="modal-desc">' + escHtml(p.descripcion) + '</p>' : '') +
     '<div class="modal-actions">' +
-      '<button class="btn-cart-modal" onclick="addToCart(' + p.id + ');closeModal()">🛒 AGREGAR AL CARRITO</button>' +
+      (vendido
+        ? '<button class="btn-cart-modal" disabled>Pieza vendida</button>'
+        : '<button class="btn-cart-modal" onclick="addToCart(' + p.id + ');closeModal();openCart()">Agregar al carrito</button>') +
       '<a href="' + waHref + '" target="_blank" class="btn-wa">' +
         '<svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.553 4.118 1.522 5.851L.057 23.786a.5.5 0 00.606.65l6.1-1.598A11.938 11.938 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.952 0-3.77-.5-5.354-1.376l-.383-.221-3.994 1.047 1.006-3.87-.247-.394A9.971 9.971 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>' +
-        'PEDIR POR WHATSAPP' +
+        (vendido ? 'Pregunta por algo parecido' : 'Preguntar por esta pieza') +
       '</a>' +
+    '</div>' +
+    '<div class="m-ship">' +
+      '<div><b>Envío</b><span>Correos de México $70 · DHL Express $250, con guía de rastreo</span></div>' +
+      '<div><b>Pago</b><span>Tarjeta u OXXO con Mercado Pago</span></div>' +
+      '<div><b>Código</b><span style="font-family:var(--mono)">VJM-' + String(p.id).padStart(4, '0') + '</span></div>' +
     '</div>';
 
   document.getElementById('modalOverlay').classList.add('open');
@@ -1802,48 +1999,51 @@ function renderProducts(list) {
   var grid = document.getElementById('productsGrid');
 
   if (list.length === 0) {
-    grid.innerHTML = '<div class="no-results">No se encontraron jerseys con esos filtros 😕</div>';
+    grid.innerHTML = '<div class="no-results">No hay jerseys con esos filtros todavía. ' +
+      '<a href="#encargos">Déjanos un encargo</a> y te avisamos cuando llegue.</div>';
     return;
   }
 
   grid.innerHTML = list.map(function(p) {
-    var vendido = p.disponible === false || p.cantidad <= 0;
+    var vendido = esVendido(p);
+    var dorsal  = getDorsal(p);
 
     var imgHtml = p.imagen
-      ? '<img src="' + p.imagen + '" alt="' + p.nombre + '" loading="lazy" ' +
-          'style="width:100%;height:100%;object-fit:cover;transition:transform .4s' + (vendido ? ';filter:grayscale(.7)' : '') + '" ' +
+      ? '<img src="' + escHtml(p.imagen) + '" alt="' + escHtml(p.nombre) + '" loading="lazy" ' +
           'onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">' +
         buildPlaceholderDiv(p, 'card-placeholder')
       : buildPlaceholderDiv(p, 'card-placeholder');
 
-    var badgeVendido = vendido
-      ? '<div style="position:absolute;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;">' +
-          '<span style="background:var(--red);color:#fff;font-family:\'Bebas Neue\',cursive;font-size:1.4rem;letter-spacing:3px;padding:8px 22px;border-radius:6px;">VENDIDO</span>' +
-        '</div>'
-      : '';
+    var badges =
+      (NUEVOS_IDS[p.id] && !vendido ? '<span class="tag2 tag2-new">Nuevo</span>' : '') +
+      (dorsal ? '<span class="tag2 tag2-player">#' + dorsal.num + '</span>' : '');
 
-    var botonesHtml = vendido
-      ? '<button class="btn-details" onclick="openModal(' + p.id + ')" style="opacity:.6">VER DETALLES</button>' +
-        '<button class="btn-add-card" disabled style="opacity:.35;cursor:not-allowed;">NO DISPONIBLE</button>'
-      : '<button class="btn-details" onclick="openModal(' + p.id + ')">VER DETALLES</button>' +
-        '<button class="btn-add-card" onclick="addToCart(' + p.id + ')">🛒 AGREGAR</button>';
+    var condHtml = '';
+    if (p.estado) {
+      var barras = '';
+      for (var k = 0; k < 10; k++) barras += '<b' + (k < p.estado ? ' class="on"' : '') + '></b>';
+      condHtml = '<div class="cond"><i>' + barras + '</i>' + p.estado + '/10 ' + estadoLabel(p.estado) + '</div>';
+    }
+
+    var meta = [p.marca, p.anio].filter(Boolean).join(' · ');
 
     return '<div class="product-card' + (vendido ? ' sold' : '') + '" data-id="' + p.id + '">' +
-      '<div class="card-img-wrap">' +
+      '<div class="card-img-wrap" onclick="openModal(' + p.id + ')">' +
         imgHtml +
-        '<div class="badge-country">' + p.bandera + ' ' + p.pais + '</div>' +
-        badgeVendido +
+        '<div class="card-badges">' + badges + '</div>' +
+        (vendido
+          ? '<div class="card-sold"><span>VENDIDO</span></div>'
+          : '<button class="card-quick" onclick="event.stopPropagation();addToCart(' + p.id + ')">Agregar al carrito</button>') +
       '</div>' +
       '<div class="card-body">' +
-        '<span class="badge-liga">' + p.liga + '</span>' +
-        '<h3 class="card-name">' + p.nombre + '</h3>' +
-        '<p class="card-club">' + p.club + '</p>' +
-        '<div class="card-meta">' +
-          '<span class="card-marca">' + p.marca + '</span>' +
-          '<span class="badge-talla">' + p.talla + '</span>' +
+        (meta ? '<span class="card-meta-line">' + escHtml(meta) + '</span>' : '') +
+        '<h3 class="card-name" onclick="openModal(' + p.id + ')">' + escHtml(p.nombre) + '</h3>' +
+        condHtml +
+        '<div class="card-row">' +
+          '<span class="card-price">' + (vendido ? '<span class="agotado">Agotado</span>' : fmtPrecio(p.precio) + '<small>MXN</small>') + '</span>' +
+          (p.talla ? '<span class="size2">Talla ' + escHtml(p.talla) + '</span>' : '') +
         '</div>' +
-        '<div class="card-price">' + (vendido ? '<span style="color:var(--red);font-size:1rem;">AGOTADO</span>' : '$' + p.precio + ' <small>MXN</small>') + '</div>' +
-        '<div class="card-actions">' + botonesHtml + '</div>' +
+        (vendido ? '' : '<button class="card-quick card-quick-m" onclick="addToCart(' + p.id + ')">Agregar al carrito</button>') +
       '</div>' +
     '</div>';
   }).join('');
@@ -1869,31 +2069,70 @@ function initObserver() {
 
 /* ── FILTERS ─────────────────────────────────────────────────── */
 function applyFilters() {
-  var srch    = document.getElementById('srchInput').value.toLowerCase().trim();
-  var country = document.getElementById('countryFilter').value;
-  var league  = document.getElementById('leagueFilter').value;
-  var price   = document.getElementById('priceFilter').value;
+  var palabras = normTxt(document.getElementById('srchInput').value).split(/\s+/).filter(Boolean);
+  var country  = document.getElementById('countryFilter').value;
+  var league   = document.getElementById('leagueFilter').value;
+  var price    = document.getElementById('priceFilter').value;
+  var catFn    = (CATS[filtroCat] || CATS.nuevos).f;
 
   var filtered = PRODUCTS.filter(function(p) {
-    var ms = !srch || (
-      p.nombre.toLowerCase().includes(srch) ||
-      p.club.toLowerCase().includes(srch)   ||
-      p.marca.toLowerCase().includes(srch)
-    );
-    var mc = !country || p.pais  === country;
-    var ml = !league  || p.liga  === league;
-    return ms && mc && ml;
+    var texto = normTxt([p.nombre, p.club, p.marca, p.pais, p.liga, p.anio].join(' '));
+    var ms = palabras.every(function(w) { return texto.indexOf(w) !== -1; });
+    var mc = !country || p.pais === country;
+    var ml = !league  || p.liga === league;
+    var mt = !filtroTalla || p.talla === filtroTalla;
+    return ms && mc && ml && mt && catFn(p);
   });
 
-  if (price === 'asc')  filtered.sort(function(a,b){ return a.precio - b.precio; });
-  if (price === 'desc') filtered.sort(function(a,b){ return b.precio - a.precio; });
+  /* por defecto: disponibles primero, luego los más nuevos */
+  if (price === 'asc')       filtered.sort(function(a,b){ return a.precio - b.precio; });
+  else if (price === 'desc') filtered.sort(function(a,b){ return b.precio - a.precio; });
+  else filtered.sort(function(a,b){ return (esVendido(a) - esVendido(b)) || (b.id - a.id); });
+
+  var titulo = palabras.length ? 'Resultados de búsqueda' : (CATS[filtroCat] || CATS.nuevos).t;
+  if (filtroCat === 'nuevos' && !palabras.length) titulo = 'Recién llegados';
+  document.getElementById('catTitle').textContent = titulo;
+  var disp = filtered.filter(function(p) { return !esVendido(p); }).length;
+  document.getElementById('catCount').textContent = disp + (disp === 1 ? ' pieza disponible' : ' piezas disponibles');
 
   renderProducts(filtered);
 }
 
+function setChip(groupId, attr, value) {
+  document.querySelectorAll('#' + groupId + ' .chip').forEach(function(c) {
+    c.setAttribute('aria-pressed', String(c.getAttribute(attr) === value));
+  });
+}
+function setCategoria(cat) {
+  filtroCat = CATS[cat] ? cat : 'nuevos';
+  setChip('catChips', 'data-cat', filtroCat);
+  document.querySelectorAll('.cat-nav a[data-goto-cat]').forEach(function(a) {
+    a.classList.toggle('cat-on', a.getAttribute('data-goto-cat') === filtroCat);
+  });
+  applyFilters();
+}
+
+document.querySelectorAll('#catChips .chip').forEach(function(c) {
+  c.addEventListener('click', function() { setCategoria(c.getAttribute('data-cat')); });
+});
+document.querySelectorAll('#tallaChips .chip').forEach(function(c) {
+  c.addEventListener('click', function() {
+    filtroTalla = c.getAttribute('data-talla');
+    setChip('tallaChips', 'data-talla', filtroTalla);
+    applyFilters();
+  });
+});
+/* enlaces del menú / footer que llevan a una categoría */
+document.querySelectorAll('[data-goto-cat]').forEach(function(a) {
+  a.addEventListener('click', function() { setCategoria(a.getAttribute('data-goto-cat')); });
+});
+
 ['srchInput','countryFilter','leagueFilter','priceFilter'].forEach(function(id) {
   document.getElementById(id).addEventListener('input',  applyFilters);
   document.getElementById(id).addEventListener('change', applyFilters);
+});
+document.getElementById('srchInput').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') { e.preventDefault(); scrollToEl(document.getElementById('catalogo')); this.blur(); }
 });
 
 document.getElementById('clearBtn').addEventListener('click', function() {
@@ -1901,7 +2140,9 @@ document.getElementById('clearBtn').addEventListener('click', function() {
   document.getElementById('countryFilter').value = '';
   document.getElementById('leagueFilter').value  = '';
   document.getElementById('priceFilter').value   = '';
-  renderProducts(PRODUCTS);
+  filtroTalla = '';
+  setChip('tallaChips', 'data-talla', '');
+  setCategoria('nuevos');
 });
 
 /* ── TOAST ───────────────────────────────────────────────────── */
@@ -1925,13 +2166,60 @@ document.querySelectorAll('.mnav-link').forEach(function(a) {
 });
 
 /* ── SMOOTH SCROLL ───────────────────────────────────────────── */
+function scrollToEl(target) {
+  if (!target) return;
+  var hdr = document.querySelector('header');
+  var off = hdr ? hdr.offsetHeight : 0;
+  window.scrollTo({ top: target.getBoundingClientRect().top + window.pageYOffset - off - 8, behavior: 'smooth' });
+}
 document.querySelectorAll('a[href^="#"]').forEach(function(a) {
   a.addEventListener('click', function(e) {
-    var target = document.querySelector(this.getAttribute('href'));
+    var href = this.getAttribute('href');
+    if (href.length < 2) return;
+    var target = document.querySelector(href);
     if (!target) return;
     e.preventDefault();
-    window.scrollTo({ top: target.offsetTop - 74, behavior: 'smooth' });
+    document.getElementById('mobileNav').classList.remove('open');
+    scrollToEl(target);
   });
+});
+
+/* ── ENCARGOS ────────────────────────────────────────────────── */
+document.getElementById('encargoForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  var msg   = document.getElementById('encMsg');
+  var btn   = document.getElementById('encBtn');
+  var club  = document.getElementById('encClub').value.trim();
+  var talla = document.getElementById('encTalla').value;
+  var nom   = document.getElementById('encNombre').value.trim();
+  var wa    = document.getElementById('encWa').value.replace(/\D/g, '');
+
+  if (!club) { msg.className = 'hunt-msg err'; msg.textContent = 'Escribe qué jersey buscas.'; return; }
+  if (wa.length < 10) { msg.className = 'hunt-msg err'; msg.textContent = 'Revisa tu WhatsApp: deben ser 10 dígitos.'; return; }
+
+  btn.disabled = true; msg.className = 'hunt-msg'; msg.textContent = 'Enviando…';
+  var guardado = false;
+  try {
+    if (window.sb) {
+      var r = await window.sb.from('encargos').insert({ busqueda: club, talla: talla, nombre: nom || null, whatsapp: wa });
+      guardado = !r.error;
+    }
+  } catch (err) { guardado = false; }
+  btn.disabled = false;
+
+  if (guardado) {
+    msg.className = 'hunt-msg ok';
+    msg.textContent = 'Listo. Te escribimos por WhatsApp cuando tengamos algo para ti.';
+    this.reset();
+  } else {
+    /* si la tabla aún no existe o falla, el encargo se manda por WhatsApp */
+    var texto = encodeURIComponent('Hola! Quiero hacer un encargo en VJM:\n• Busco: ' + club + '\n• Talla: ' + talla +
+      (nom ? '\n• Nombre: ' + nom : '') + '\n• Mi WhatsApp: ' + wa);
+    msg.className = 'hunt-msg ok';
+    msg.innerHTML = 'Último paso: <a href="https://wa.me/' + WA_NUM + '?text=' + texto +
+      '" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;font-weight:700">' +
+      'envíanos tu encargo por WhatsApp</a>.';
+  }
 });
 
 /* ── INIT ────────────────────────────────────────────────────── */
@@ -1991,91 +2279,224 @@ var currentProfile = null;
 /* ══════════════════════════════════════════════════════
    CARGAR JERSEYS DESDE SUPABASE
 ══════════════════════════════════════════════════════ */
-/* ── HERO: carrusel de jerseys flotantes ──────────────────────── */
-var heroCarouselTimer = null;
-function initHeroCarousel() {
-  var mainEl = document.querySelector('.hj-main');
-  var secEl  = document.querySelector('.hj-secondary');
-  if (!mainEl || !secEl) return;
+/* ── HERO: pieza destacada + fichas de categoría ─────────────── */
+var piezaDestacada = null;
 
-  var slides = PRODUCTS.filter(function(p) { return p.disponible !== false; });
-  if (slides.length < 2) return;
+/* Semana actual en hora de México, ej. 202646. Todos los visitantes ven la misma
+   selección durante la semana y cambia sola cada lunes. */
+function semanaMX() {
+  var ymd = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Mexico_City', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
+  var d = new Date(ymd + 'T00:00:00Z');
+  d.setUTCDate(d.getUTCDate() + 3 - ((d.getUTCDay() + 6) % 7));           /* jueves de esta semana ISO */
+  var jan4 = new Date(Date.UTC(d.getUTCFullYear(), 0, 4));
+  jan4.setUTCDate(jan4.getUTCDate() + 3 - ((jan4.getUTCDay() + 6) % 7));
+  return d.getUTCFullYear() * 100 + 1 + Math.round((d - jan4) / 604800000);
+}
+/* orden pseudoaleatorio estable por semana: si una pieza se vende, las demás no se reacomodan */
+function rangoSemana(id, semana) {
+  var h = Math.imul((id * 2654435761) ^ semana, 2246822507) >>> 0;
+  h ^= h >>> 15; h = Math.imul(h, 3266489909) >>> 0; h ^= h >>> 16;
+  return h;
+}
+function ordenSemana(list, semana) {
+  return list.slice().sort(function(a, b) { return rangoSemana(a.id, semana) - rangoSemana(b.id, semana); });
+}
 
-  if (heroCarouselTimer) clearInterval(heroCarouselTimer);
-  var ultimoPar = [-1, -1];
+function elegirDestacada() {
+  var disp = PRODUCTS.filter(function(p) { return !esVendido(p) && p.imagen; });
+  if (!disp.length) return null;
+  /* 1) la marcada como destacada en Supabase; 2) una con dorsal que rota cada semana; 3) cualquiera */
+  var marcada = disp.filter(function(p) { return p.destacado; });
+  if (marcada.length) return marcada[0];
+  var conDorsal = disp.filter(function(p) { return getDorsal(p); });
+  return ordenSemana(conDorsal.length ? conDorsal : disp, semanaMX())[0];
+}
 
-  /* slides viene ordenado por id ascendente → los últimos agregados quedan al final.
-     Les damos más peso para que salgan más seguido, sin perder frecuencia normal en el resto. */
-  var RECIENTES_CANT = Math.min(5, slides.length);
-  var RECIENTE_PESO = 4;
-  var pesos = slides.map(function(p, idx) {
-    return idx >= slides.length - RECIENTES_CANT ? RECIENTE_PESO : 1;
+/* ── CARRUSEL PRINCIPAL ───────────────────────────────────────── */
+var COLOR_MAP = [
+  [/rojo|grana/i, '#c81e1e'], [/azul marino|marino/i, '#1e3a8a'], [/azul|celeste/i, '#2563eb'],
+  [/verde/i, '#078F47'], [/naranja/i, '#ea580c'], [/amarill|dorad/i, '#C9A84C'],
+  [/morado|violeta|p[uú]rpura/i, '#7c3aed'], [/negro/i, '#6b7280'], [/blanco/i, '#C9A84C']
+];
+function colorDe(p) {
+  for (var i = 0; i < COLOR_MAP.length; i++) if (COLOR_MAP[i][0].test(p.color || '')) return COLOR_MAP[i][1];
+  return '#078F47';
+}
+function elegirSlides(excluir) {
+  var semana = semanaMX();
+  var disp = PRODUCTS.filter(function(p) { return !esVendido(p) && p.imagen && (!excluir || p.id !== excluir.id); });
+  /* primero las que tienen foto de jugador/modelo, luego las de dorsal, luego el resto; todo rotando por semana */
+  var conFoto   = ordenSemana(disp.filter(function(p) { return p.imagenHero; }), semana);
+  var conDorsal = ordenSemana(disp.filter(function(p) { return !p.imagenHero && getDorsal(p); }), semana);
+  var resto     = ordenSemana(disp.filter(function(p) { return !p.imagenHero && !getDorsal(p); }), semana);
+  return conFoto.concat(conDorsal, resto).slice(0, 5);
+}
+
+var hc = { idx: 0, timer: null, slides: [], pausa: false };
+function renderHeroCarrusel() {
+  var track = document.getElementById('hcTrack');
+  var dots  = document.getElementById('hcDots');
+  if (!track) return;
+  hc.slides = elegirSlides(piezaDestacada);
+  if (!hc.slides.length) { document.getElementById('inicio').hidden = true; return; }
+
+  track.innerHTML = hc.slides.map(function(p, i) {
+    var d = getDorsal(p);
+    var titulo = d && d.jugador
+      ? escHtml(d.jugador) + ' <span>#' + d.num + '</span>'
+      : escHtml(p.club || p.nombre);
+    var eyebrow = [p.club, p.anio].filter(Boolean).join(' · ');
+    var media = p.imagenHero
+      ? '<img class="hc-photo" src="' + escHtml(p.imagenHero) + '" alt="' + escHtml(d && d.jugador ? d.jugador + ' con el jersey de ' + p.club : p.nombre) + '" ' + (i ? 'loading="lazy"' : '') + '>' +
+        (p.heroCredito
+          ? (/^https:\/\//.test(p.heroFuente)
+              ? '<a class="hc-credit" href="' + escHtml(p.heroFuente) + '" target="_blank" rel="noopener">' + escHtml(p.heroCredito) + '</a>'
+              : '<span class="hc-credit">' + escHtml(p.heroCredito) + '</span>')
+          : '')
+      : '';
+    var lado = p.imagenHero
+      ? ''
+      : '<div class="hc-media">' +
+          (d ? '<span class="hc-num" aria-hidden="true">' + d.num + '</span>' : '') +
+          '<img class="hc-jersey" src="' + escHtml(p.imagen) + '" alt="' + escHtml(p.nombre) + '" ' + (i ? 'loading="lazy"' : '') + '>' +
+        '</div>';
+    return '<article class="hc-slide' + (p.imagenHero ? ' is-photo' : '') + (i === 0 ? ' is-active' : '') + '" ' +
+        'data-id="' + p.id + '" style="--c:' + colorDe(p) + '" aria-roledescription="diapositiva" ' +
+        'aria-label="' + (i + 1) + ' de ' + hc.slides.length + '"' + (i ? ' aria-hidden="true"' : '') + '>' +
+      media +
+      '<div class="hc-glow"></div>' +
+      '<div class="wrap hc-inner">' +
+        '<div class="hc-copy">' +
+          '<p class="eyebrow">' + escHtml(eyebrow) + '</p>' +
+          '<h2 class="hc-title">' + titulo + '</h2>' +
+          '<p class="hc-sub">' + escHtml(p.nombre) + '</p>' +
+          '<div class="hc-meta">' +
+            (NUEVOS_IDS[p.id] ? '<span class="tag2 tag2-new">Nuevo</span>' : '') +
+            '<span class="tag2 tag2-gold">Pieza única</span>' +
+            (p.talla ? '<span class="tag2">Talla ' + escHtml(p.talla) + '</span>' : '') +
+          '</div>' +
+          '<div class="hc-price">' + fmtPrecio(p.precio) + '<small>MXN</small></div>' +
+          '<div class="hc-btns">' +
+            '<button class="btn2 btn2-primary" data-hc-buy="' + p.id + '">Comprar ahora</button>' +
+            '<a class="btn2 btn2-ghost" href="#catalogo">Ver catálogo</a>' +
+          '</div>' +
+        '</div>' +
+        lado +
+      '</div>' +
+    '</article>';
+  }).join('');
+
+  dots.innerHTML = hc.slides.length > 1 ? hc.slides.map(function(p, i) {
+    return '<button class="hc-dot" data-i="' + i + '" aria-label="Ver jersey ' + (i + 1) + '"' + (i === 0 ? ' aria-current="true"' : '') + '></button>';
+  }).join('') : '';
+  document.getElementById('hcPrev').hidden = hc.slides.length < 2;
+  document.getElementById('hcNext').hidden = hc.slides.length < 2;
+
+  /* clic en cualquier parte de la diapositiva abre la ficha del jersey */
+  track.querySelectorAll('.hc-slide').forEach(function(s) {
+    s.addEventListener('click', function(e) {
+      if (e.target.closest('a')) return;
+      openModal(Number(s.getAttribute('data-id')));
+    });
   });
-  var pesoTotal = pesos.reduce(function(a, b) { return a + b; }, 0);
+  track.querySelectorAll('a[href="#catalogo"]').forEach(function(a) {
+    a.addEventListener('click', function(e) { e.preventDefault(); scrollToEl(document.getElementById('catalogo')); });
+  });
+  dots.querySelectorAll('.hc-dot').forEach(function(b) {
+    b.addEventListener('click', function() { hcIr(Number(b.getAttribute('data-i'))); hcAuto(); });
+  });
+  hc.idx = 0;
+  hcAuto();
+}
+function hcIr(i) {
+  var slides = document.querySelectorAll('#hcTrack .hc-slide');
+  var dots   = document.querySelectorAll('#hcDots .hc-dot');
+  if (!slides.length) return;
+  hc.idx = (i + slides.length) % slides.length;
+  slides.forEach(function(s, k) {
+    s.classList.toggle('is-active', k === hc.idx);
+    if (k === hc.idx) s.removeAttribute('aria-hidden'); else s.setAttribute('aria-hidden', 'true');
+  });
+  dots.forEach(function(d, k) { if (k === hc.idx) d.setAttribute('aria-current', 'true'); else d.removeAttribute('aria-current'); });
+}
+function hcAuto() {
+  if (hc.timer) clearInterval(hc.timer);
+  if (hc.slides.length < 2 || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  hc.timer = setInterval(function() { if (!hc.pausa && !document.hidden) hcIr(hc.idx + 1); }, 6000);
+}
+(function initHcControles() {
+  var sec = document.getElementById('inicio');
+  document.getElementById('hcPrev').addEventListener('click', function() { hcIr(hc.idx - 1); hcAuto(); });
+  document.getElementById('hcNext').addEventListener('click', function() { hcIr(hc.idx + 1); hcAuto(); });
+  sec.addEventListener('mouseenter', function() { hc.pausa = true; });
+  sec.addEventListener('mouseleave', function() { hc.pausa = false; });
+  sec.addEventListener('focusin',  function() { hc.pausa = true; });
+  sec.addEventListener('focusout', function() { hc.pausa = false; });
+  /* deslizar con el dedo en celular */
+  var x0 = null;
+  sec.addEventListener('touchstart', function(e) { x0 = e.touches[0].clientX; }, { passive: true });
+  sec.addEventListener('touchend', function(e) {
+    if (x0 === null) return;
+    var dx = e.changedTouches[0].clientX - x0; x0 = null;
+    if (Math.abs(dx) > 45) { hcIr(hc.idx + (dx < 0 ? 1 : -1)); hcAuto(); }
+  }, { passive: true });
+  document.getElementById('hcTrack').addEventListener('click', function(e) {
+    var b = e.target.closest('[data-hc-buy]');
+    if (b) { e.stopPropagation(); openModal(Number(b.getAttribute('data-hc-buy'))); }
+  }, true);
+})();
 
-  function pickIndexPonderado() {
-    var r = Math.random() * pesoTotal;
-    for (var k = 0; k < pesos.length; k++) {
-      r -= pesos[k];
-      if (r <= 0) return k;
-    }
-    return pesos.length - 1;
-  }
+function initHeroCarousel() {
+  var card = document.getElementById('featureCard');
+  var p = elegirDestacada();
+  piezaDestacada = p;
+  renderHeroCarrusel();
+  if (!card || !p) { if (card) card.hidden = true; return; }
 
-  function pickTwoRandom() {
-    var i = pickIndexPonderado();
-    var j;
-    do { j = pickIndexPonderado(); } while (j === i);
-    /* evitar repetir exactamente el mismo par seguido (solo si hay de sobra para variar) */
-    if (slides.length > 2 &&
-        ((i === ultimoPar[0] && j === ultimoPar[1]) || (i === ultimoPar[1] && j === ultimoPar[0]))) {
-      return pickTwoRandom();
-    }
-    ultimoPar = [i, j];
-    return [slides[i], slides[j]];
-  }
+  var dorsal = getDorsal(p);
+  var img = document.getElementById('featImg');
+  img.src = p.imagen; img.alt = p.nombre;
+  document.getElementById('featDorsal').textContent = dorsal ? dorsal.num : '';
+  document.getElementById('featName').textContent = p.nombre;
+  var kv = [['Talla', p.talla], ['Marca', p.marca], ['Año', p.anio], ['Liga', p.liga]];
+  if (p.estado) kv.splice(2, 0, ['Estado', p.estado + '/10 · ' + estadoLabel(p.estado)]);
+  document.getElementById('featKv').innerHTML = kv.filter(function(r) { return r[1]; }).map(function(r) {
+    return '<dt>' + r[0] + '</dt><dd>' + escHtml(r[1]) + '</dd>';
+  }).join('');
+  document.getElementById('featPrice').innerHTML = fmtPrecio(p.precio) + ' <small>MXN</small>';
+  card.hidden = false;
+}
+document.getElementById('featBtn').addEventListener('click', function() { if (piezaDestacada) openModal(piezaDestacada.id); });
+document.getElementById('featOpen').addEventListener('click', function() { if (piezaDestacada) openModal(piezaDestacada.id); });
 
-  /* precarga la imagen para que el fundido no se corte a medias mientras carga */
-  function preload(src) {
-    return new Promise(function(resolve) {
-      if (!src) return resolve();
-      var im = new Image();
-      im.onload = resolve; im.onerror = resolve;
-      im.src = src;
+var TILES = [
+  { cat: 'ligamx',      t: 'Liga MX',     s: 'Monterrey, Santos, Chivas y más' },
+  { cat: 'selecciones', t: 'Selecciones', s: 'Mundiales y torneos internacionales' },
+  { cat: 'europa',      t: 'Europa',      s: 'Premier, La Liga, Serie A, Bundesliga' },
+  { cat: 'dorsal',      t: 'Con dorsal',  s: 'Con nombre y número de jugador' },
+  { cat: 'retro',       t: 'Retro',       s: 'Antes de 2010' }
+];
+function renderTiles() {
+  var el = document.getElementById('catTiles');
+  if (!el) return;
+  var usadas = {};
+  el.innerHTML = TILES.map(function(t) {
+    var items = PRODUCTS.filter(function(p) { return CATS[t.cat].f(p) && !esVendido(p); });
+    /* foto: la pieza más reciente de la categoría que no se haya usado en otra ficha */
+    var foto = items.slice().sort(function(a,b){ return b.id - a.id; })
+      .find(function(p) { return p.imagen && !usadas[p.id]; });
+    if (foto) usadas[foto.id] = true;
+    return '<button class="tile" data-tile-cat="' + t.cat + '">' +
+      (foto ? '<img src="' + escHtml(foto.imagen) + '" alt="" loading="lazy">' : '') +
+      '<div class="cap"><strong>' + t.t + '</strong><span>' + items.length + ' piezas · ' + t.s + '</span></div>' +
+    '</button>';
+  }).join('');
+  el.querySelectorAll('[data-tile-cat]').forEach(function(b) {
+    b.addEventListener('click', function() {
+      setCategoria(b.getAttribute('data-tile-cat'));
+      scrollToEl(document.getElementById('catalogo'));
     });
-  }
-
-  function paint(el, p, esNueva) {
-    var img   = el.querySelector('img');
-    var name  = el.querySelector('.hj-card-name');
-    var price = el.querySelector('.hj-card-price');
-    var badge = el.querySelector('.hj-badge');
-    img.src = p.imagen || '';
-    img.alt = p.nombre;
-    name.textContent = p.nombre;
-    price.textContent = '$' + p.precio + ' MXN';
-    if (badge) {
-      if (esNueva) { badge.className = 'hj-badge hj-badge-new'; badge.textContent = 'NUEVO'; }
-      else { badge.className = 'hj-badge hj-badge-club'; badge.textContent = (p.bandera || '🌎') + ' ' + (p.pais || ''); }
-    }
-  }
-
-  function showPair() {
-    var par = pickTwoRandom();
-    Promise.all([preload(par[0].imagen), preload(par[1].imagen)]).then(function() {
-      paint(mainEl, par[0], true);
-      paint(secEl, par[1], false);
-      mainEl.classList.remove('hj-fade');
-      secEl.classList.remove('hj-fade');
-    });
-  }
-
-  showPair();
-  heroCarouselTimer = setInterval(function() {
-    mainEl.classList.add('hj-fade');
-    secEl.classList.add('hj-fade');
-    setTimeout(showPair, 450);
-  }, 4000);
+  });
 }
 
 async function loadJerseysFromSB() {
@@ -2083,7 +2504,9 @@ async function loadJerseysFromSB() {
 
   if (res.error || !res.data || res.data.length === 0) {
     /* fallback al array hardcodeado si falla la conexión */
-    renderProducts(PRODUCTS);
+    marcarNuevos();
+    applyFilters();
+    renderTiles();
     initHeroCarousel();
     return;
   }
@@ -2106,7 +2529,17 @@ async function loadJerseysFromSB() {
       imagenEspalda: j.imagen_espalda || null,
       descripcion:   j.descripcion   || '',
       disponible:    j.disponible !== false,
-      cantidad:      j.cantidad !== undefined ? j.cantidad : 1
+      cantidad:      j.cantidad !== undefined ? j.cantidad : 1,
+      /* campos del rediseño (opcionales: si la columna no existe quedan vacíos) */
+      estado:        j.estado ? Math.max(1, Math.min(10, Number(j.estado))) : null,
+      estadoNota:    j.estado_nota || '',
+      axilaCm:       j.axila_cm  || null,
+      largoCm:       j.largo_cm  || null,
+      mangaCm:       j.manga_cm  || null,
+      destacado:     j.destacado === true,
+      imagenHero:    j.imagen_hero || null,
+      heroCredito:   j.imagen_hero_credito || '',
+      heroFuente:    j.imagen_hero_fuente  || ''
     };
   });
 
@@ -2128,13 +2561,17 @@ async function loadJerseysFromSB() {
   /* actualizar filtros dinámicamente con los países/ligas reales */
   actualizarFiltros();
 
-  /* actualizar stat del hero con el total disponible */
-  var disponibles = PRODUCTS.filter(function(p) { return p.disponible; }).length;
-  var statEl = document.querySelector('.hero-stat .snum');
-  if (statEl) statEl.textContent = disponibles;
+  /* actualizar stats del hero con datos reales */
+  var disponibles = PRODUCTS.filter(function(p) { return !esVendido(p); }).length;
+  var ligas = PRODUCTS.map(function(p) { return p.liga; })
+    .filter(function(v, i, a) { return v && a.indexOf(v) === i; }).length;
+  document.getElementById('statDisponibles').textContent = disponibles;
+  document.getElementById('statLigas').textContent = ligas;
 
   /* renderizar catálogo */
-  renderProducts(PRODUCTS);
+  marcarNuevos();
+  applyFilters();
+  renderTiles();
   initHeroCarousel();
 }
 
